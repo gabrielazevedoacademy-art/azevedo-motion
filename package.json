@@ -1,0 +1,25 @@
+{
+  "name": "azevedo-motion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Estúdio de motion graphics feito em código",
+  "scripts": {
+    "render": "node engine/render.mjs",
+    "preview": "node engine/render.mjs --preview",
+    "critique": "node engine/critique.mjs",
+    "audio": "node lib/audio.mjs",
+    "setup": "bash scripts/setup.sh",
+    "check": "node engine/check.mjs"
+  },
+  "dependencies": {
+    "@fontsource/archivo-black": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0",
+    "playwright": "^1.64.0"
+  }
+}

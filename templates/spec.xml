@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Spec de vídeo = lista de estados. Copie para videos/<nome>/spec.xml e preencha ANTES de codar.
+  Tempos em segundos, alinhados à grade de batidas (bpm). Cada <estado> descreve o quadro como ele
+  deve estar NAQUELE instante; o código interpola entre estados com molas de lib/motion.js.
+  O exemplo abaixo é um "morph": um elemento que nunca corta, muda de forma guiado por um cursor,
+  e cujo último frame é igual ao primeiro (loop perfeito).
+-->
+<spec nome="exemplo-morph" versao="1">
+
+  <entradas>
+    <pedido>Loop de 6 s mostrando que o produto "transforma qualquer forma"</pedido>
+    <duracao>6</duracao>
+    <formatos>16:9, 9:16</formatos>
+    <fps>60</fps>
+    <bpm>120</bpm>                          <!-- 1 batida = 0,5 s; 1 compasso = 2 s -->
+    <referencias>refs/style_guide.md</referencias>
+    <marca>assets/minha-marca/ (logo.svg, cores.json)</marca>
+    <audio estilo="minimalista">sintetizado; ou audio/trilha.mp3</audio>
+  </entradas>
+
+  <direcao>
+    <ideia>Uma única forma laranja que nunca corta. Um cursor "agarra" vértices e a forma obedece.</ideia>
+    <paleta>#0B0B0D tinta · #EFEAE0 papel · #FF4A1C acento</paleta>
+    <tipografia>Archivo Black (rótulo), JetBrains Mono (contador)</tipografia>
+    <movimento>forma: default · cursor: snappy · rótulos: heavy (sem overshoot)</movimento>
+    <camera>fixa; leve rotação da forma (+18° por troca)</camera>
+    <reenquadre>
+      <formato id="16:9">forma à direita (76% da área segura), rótulo à esquerda</formato>
+      <formato id="9:16">forma no terço superior, rótulo embaixo, fora da área da interface (20% inferior)</formato>
+    </reenquadre>
+  </direcao>
+
+  <estados>
+    <estado t="0.0"  cena="morph">círculo, centro, raio 27% da altura; cursor fora do quadro (direita-baixo); contador "01 · círculo"</estado>
+    <estado t="0.42">cursor pousado no vértice direito</estado>
+    <estado t="0.5"  evento="click">clique (escala 0,84 → 1, snappy); forma começa a virar quadrado; contador rola para "02 · quadrado"</estado>
+    <estado t="1.0"  evento="click">quadrado assentado; cursor no canto inferior; clique → triângulo</estado>
+    <estado t="1.5"  evento="click">triângulo; clique → estrela de 5 pontas, rotação +18°</estado>
+    <estado t="2.0"  evento="hit">estrela assentada (corte de compasso: o fundo troca papel → tinta, a forma NÃO corta)</estado>
+    <estado t="3.0">estrela "respira" no pulso da batida (escala 1 + 0,03·pulse)</estado>
+    <estado t="4.0"  evento="whoosh">cursor arrasta o centro da forma 10% para a esquerda (track, default)</estado>
+    <estado t="5.0"  evento="click">clique → volta ao círculo, rotação volta a 0°</estado>
+    <estado t="5.5">cursor sai do quadro pelo mesmo ponto de onde entrou</estado>
+    <estado t="6.0"  loop="true">IDÊNTICO a t=0.0 (mesma forma, posição, cor, cursor fora, contador "01")</estado>
+  </estados>
+
+  <regras>
+    <regra>seek(t) puro: nada de relógio, rAF, setTimeout, animação CSS ou Math.random sem semente.</regra>
+    <regra>Toda mudança de valor via spring/track de lib/motion.js; tipografia sem overshoot.</regra>
+    <regra>Morph: amostrar a forma em N pontos polares fixos (N=180) e interpolar raios — nunca trocar o elemento.</regra>
+    <regra>Loop: o último estado repete o primeiro e as molas precisam estar assentadas em t=DURATION (settleTime).</regra>
+    <regra>Cortes e cliques caem em batidas (beats(bpm, dur)).</regra>
+    <regra>Layout via lib/layout.js; reenquadrar por formato, nunca recortar.</regra>
+  </regras>
+
+  <cuidados>
+    <cuidado>Forma com raio muito variável (estrela) invade o rótulo: checar no contact sheet em todos os formatos.</cuidado>
+    <cuidado>Overshoot da mola default em formas pontiagudas cria "espinhos": usar heavy se aparecer.</cuidado>
+    <cuidado>Loop: conferir frame 0 vs. último frame lado a lado (npm run critique -- ... --at 0,5.983).</cuidado>
+    <cuidado>Cursor não pode cobrir o texto em nenhum estado.</cuidado>
+  </cuidados>
+
+</spec>

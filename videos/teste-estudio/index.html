@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>teste-estudio</title>
+<link rel="stylesheet" href="/node_modules/@fontsource/archivo-black/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/700.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/jetbrains-mono/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/jetbrains-mono/700.css">
+<style>
+  :root { --ink:#0B0B0D; --ink2:#15151A; --paper:#EFEAE0; --accent:#FF4A1C; --blue:#2B59FF; --mute:#8C8A86; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { width:var(--W); height:var(--H); overflow:hidden; background:var(--ink); }
+  body { font-family:Inter, sans-serif; color:var(--paper); -webkit-font-smoothing:antialiased; }
+  .scene { position:absolute; inset:0; overflow:hidden; display:none; }
+  .mono { font-family:'JetBrains Mono', monospace; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
+
+  /* S1 tipografia */
+  #s1 { background:var(--ink); }
+  #s1 .line { position:absolute; overflow:hidden; line-height:1.18; white-space:nowrap; }
+  #s1 .line > span { display:inline-block; font-family:'Archivo Black'; text-transform:uppercase; letter-spacing:-.035em; }
+  #s1 .ch { display:inline-block; will-change:transform; }
+  #s1 .accent { color:var(--accent); }
+  #s1 .cap { position:absolute; color:var(--mute); overflow:hidden; white-space:nowrap; }
+  #s1 .cap span { display:inline-block; }
+  #rule { position:absolute; height:4px; background:var(--accent); transform-origin:left center; }
+
+  /* camada do morph (atravessa S1 → S2) */
+  #morph { position:absolute; inset:0; width:100%; height:100%; display:none; }
+  #s2 { background:var(--paper); color:var(--ink); }
+  #s2 .big { position:absolute; font-family:'Archivo Black'; text-transform:uppercase; letter-spacing:-.03em; line-height:.86; color:var(--ink); }
+  #s2 .roll { position:absolute; overflow:hidden; }
+  #s2 .roll .stack { display:flex; flex-direction:column; }
+  #s2 .roll .stack div { white-space:nowrap; }
+  #cursor { position:absolute; left:0; top:0; display:none; transform-origin:4px 4px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+
+  /* S3 câmera */
+  #s3 { background:radial-gradient(120% 90% at 50% 30%, #1A1A22 0%, var(--ink) 70%); }
+  #cam { position:absolute; inset:0; }
+  #world { position:absolute; left:50%; top:50%; transform-style:preserve-3d; }
+  .card { position:absolute; background:var(--ink2); border:1px solid #2A2A33; border-radius:calc(var(--u) * 1.6); display:flex; flex-direction:column; justify-content:space-between; padding:calc(var(--u) * 2.2); backface-visibility:hidden; transform-style:preserve-3d; }
+  .card .n { color:var(--mute); }
+  .card .v { font-family:'Archivo Black'; text-transform:uppercase; letter-spacing:-.02em; line-height:.9; color:var(--paper); }
+  .card.hot { background:var(--accent); border-color:var(--accent); }
+  .card.hot .n { color:rgba(11,11,13,.6); } .card.hot .v { color:var(--ink); }
+  #s3 .floor { position:absolute; transform-style:preserve-3d; background-image:linear-gradient(#22222b 1px, transparent 1px), linear-gradient(90deg, #22222b 1px, transparent 1px); }
+
+  /* S4 partículas */
+  #s4 { background:var(--ink); }
+  #pc { position:absolute; inset:0; }
+  #s4 .tag { position:absolute; color:var(--paper); overflow:hidden; white-space:nowrap; }
+  #s4 .tag span { display:inline-block; }
+
+  /* HUD + grão */
+  #hud { position:absolute; inset:0; pointer-events:none; z-index:10; }
+  #hud div { position:absolute; white-space:nowrap; }
+  #hud .dot { display:inline-block; width:.62em; height:.62em; border-radius:50%; background:var(--accent); margin-right:.5em; vertical-align:baseline; }
+  #grain { position:absolute; inset:-64px; z-index:11; opacity:.07; mix-blend-mode:overlay; pointer-events:none; }
+</style>
+</head>
+<body>
+<section class="scene" id="s1">
+  <div class="line" id="l1"><span>Motion</span></div>
+  <div class="line" id="l2"><span>feito em</span></div>
+  <div class="line" id="l3"><span class="accent">código.</span></div>
+  <div id="rule"></div>
+  <div class="cap mono" id="cap1"><span>↳ seek(t) · 60 fps · determinístico</span></div>
+</section>
+<section class="scene" id="s2">
+  <div class="big" id="s2title">Morph</div>
+  <div class="roll mono" id="roll"><div class="stack" id="rollstack"><div>01 · círculo</div><div>02 · quadrado</div><div>03 · triângulo</div><div>04 · estrela</div><div>05 · círculo</div></div></div>
+  <div class="mono" id="s2cap" style="position:absolute;color:#6d6a64">uma forma · nunca corta · guiada pelo cursor</div>
+</section>
+<svg id="morph"><path id="mpath" fill="#FF4A1C"/><g id="handles"></g></svg>
+<svg id="cursor" width="44" height="52" viewBox="0 0 44 52"><path d="M4 4 L4 42 L14 32 L21 48 L28 45 L21 29 L36 29 Z" fill="#0B0B0D" stroke="#EFEAE0" stroke-width="3" stroke-linejoin="round"/></svg>
+<section class="scene" id="s3"><div id="cam"><div id="world"></div></div></section>
+<section class="scene" id="s4"><canvas id="pc"></canvas><div class="tag mono" id="tag"></div></section>
+<div id="hud" class="mono">
+  <div id="hTL">Azevedo / Motion</div>
+  <div id="hTR"></div>
+  <div id="hBL"></div>
+  <div id="hBR"><span class="dot"></span>120 BPM</div>
+</div>
+<div id="grain"></div>
+
+<script type="module">
+import { spring, springProgress, track, inOut, stagger, clamp, lerp, mix, rng, hash, mixColor, transform, set, beats, sceneAt } from '/lib/motion.js';
+import { createLayout, applyRoot, fitText } from '/lib/layout.js';
+
+// fontes antes de medir qualquer texto
+await Promise.all(['400 100px "Archivo Black"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"', '500 20px Inter'].map((f) => document.fonts.load(f, 'AZÉÚ0→↳·')));
+const L = applyRoot(createLayout());
+const { W, H, u, safe } = L;
+const B = beats(120, 8);                       // 1 batida = 0.5 s · 1 compasso = 2 s
+const FPS_TC = 60;
+const $ = (id) => document.getElementById(id);
+
+const SCENES = [
+  { name: 'tipografia cinética', start: 0, end: B.bar(1) },
+  { name: 'morph de forma', start: B.bar(1), end: B.bar(2) },
+  { name: 'câmera 3D', start: B.bar(2), end: B.bar(3) },
+  { name: 'partículas', start: B.bar(3), end: 8 },
+];
+window.DURATION = 8;
+window.SCENES = SCENES;
+window.POSTER_T = 7.7;
+
+// ------------------------------------------------------------------ grão (textura estática com semente)
+{
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), img = g.createImageData(256, 256), r = rng(42);
+  for (let i = 0; i < img.data.length; i += 4) { const v = r() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  $('grain').style.backgroundImage = `url(${c.toDataURL()})`;
+}
+
+// ------------------------------------------------------------------ HUD
+const hudPad = L.pick({ landscape: u * 4, portrait: u * 6 });
+const hudSize = L.pick({ landscape: u * 1.5, portrait: u * 2.6 });
+for (const id of ['hTL', 'hTR', 'hBL', 'hBR']) $(id).style.fontSize = hudSize + 'px';
+const hy0 = L.pick({ landscape: hudPad, portrait: safe.y - hudSize * 2.2 });
+const hy1 = L.pick({ landscape: H - hudPad - hudSize, portrait: safe.y + safe.h + hudSize * 0.6 });
+Object.assign($('hTL').style, { left: safe.x + 'px', top: hy0 + 'px' });
+Object.assign($('hTR').style, { right: (W - safe.x - safe.w) + 'px', top: hy0 + 'px' });
+Object.assign($('hBL').style, { left: safe.x + 'px', top: hy1 + 'px' });
+Object.assign($('hBR').style, { right: (W - safe.x - safe.w) + 'px', top: hy1 + 'px' });
+const tc = (t) => { const f = Math.floor(t * FPS_TC + 1e-6); const s = Math.floor(f / FPS_TC); return `00:00:${String(s).padStart(2, '0')}:${String(f % FPS_TC).padStart(2, '0')}`; };
+
+// ------------------------------------------------------------------ S1: tipografia cinética
+const lines = [$('l1'), $('l2'), $('l3')];
+for (const ln of lines) {
+  const sp = ln.firstElementChild;
+  sp.innerHTML = [...sp.textContent].map((c) => `<span class="ch">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+}
+const s1Size = fitText($('l2').firstElementChild, L.pick({ landscape: safe.w * 0.62, portrait: safe.w * 0.98, square: safe.w * 0.92 }), { max: 260 });
+for (const ln of lines) ln.firstElementChild.style.fontSize = s1Size + 'px';
+const lh = s1Size * 0.86;
+const blockH = lh * 3 + s1Size * 0.12;
+const s1y = L.pick({ landscape: H * 0.5 - blockH * 0.56, portrait: safe.cy - blockH * 0.6, square: H * 0.5 - blockH * 0.6 });
+// caixa de cada linha mais alta que a pitch: o acento de "Ó" não é cortado pela máscara
+lines.forEach((ln, i) => Object.assign(ln.style, { left: safe.x + 'px', top: (s1y + i * (lh + s1Size * 0.06) - s1Size * 0.2) + 'px', height: (s1Size * 1.18) + 'px' }));
+const capSize = L.pick({ landscape: u * 2.2, portrait: u * 3.4 });
+Object.assign($('cap1').style, { left: safe.x + 'px', top: (s1y + blockH + s1Size * 0.22) + 'px', fontSize: capSize + 'px' });
+$('s1').style.display = 'block';
+const l3w = lines[2].firstElementChild.getBoundingClientRect().width;
+$('s1').style.display = '';
+Object.assign($('rule').style, { left: safe.x + 'px', top: (s1y + blockH + s1Size * 0.06) + 'px', width: Math.min(safe.w, l3w + s1Size * 0.6) + 'px', height: Math.max(4, u * 0.6) + 'px' });
+
+const lineIn = [B.beat(0) - 0.12, B.beat(1), B.beat(2)];  // gancho: já há movimento no frame 0
+function drawS1(t) {
+  lines.forEach((ln, i) => {
+    const chars = ln.querySelectorAll('.ch');
+    chars.forEach((c, k) => {
+      const p = springProgress(t - lineIn[i] - stagger(k, 0.028), 'heavy');
+      // batida 3: compressão do bloco (kerning aperta, linhas sobem levemente)
+      const squeeze = springProgress(t - B.beat(3), 'heavy');
+      c.style.transform = `translate3d(${-k * squeeze * s1Size * 0.012}px, ${(1 - p) * s1Size * 1.4}px, 0)`;
+    });
+  });
+  $('rule').style.transform = `scaleX(${springProgress(t - B.beat(2) - 0.12, 'snappy')})`;
+  const cp = springProgress(t - B.beat(3) + 0.05, 'snappy');
+  $('cap1').firstElementChild.style.transform = `translateY(${(1 - cp) * 110}%)`;
+}
+
+// ------------------------------------------------------------------ S2: morph guiado por cursor
+const N = 180;
+const shapes = {
+  circle: () => 1,
+  square: (a) => 1 / Math.max(Math.abs(Math.cos(a)), Math.abs(Math.sin(a))) * 0.86,
+  triangle: (a) => { const k = Math.PI * 2 / 3, x = ((a + Math.PI / 2) % k + k) % k - k / 2; return 0.62 / Math.cos(x); },
+  star: (a) => { const k = Math.PI * 2 / 5, x = ((a + Math.PI / 2) % k + k) % k - k / 2; return lerp(1.08, 0.5, Math.abs(x) / (k / 2)) ; },
+};
+const radii = (name) => Array.from({ length: N }, (_, i) => shapes[name](i / N * Math.PI * 2));
+const R = { circle: radii('circle'), square: radii('square'), triangle: radii('triangle'), star: radii('star') };
+const morphSize = L.pick({ landscape: H * 0.27, portrait: W * 0.3, square: W * 0.19 });
+const mc = L.pick({ landscape: { x: safe.x + safe.w * 0.76, y: H * 0.5 }, portrait: { x: W * 0.5, y: safe.y + safe.h * 0.33 }, square: { x: W * 0.68, y: H * 0.36 } });
+const cover = Math.hypot(W, H) * 0.62 / 0.86;     // quadrado que cobre o quadro inteiro
+const tM = B.bar(1);
+// alvos de forma: entra como quadrado de tela cheia (vindo de S1) → círculo → quadrado → triângulo → estrela → círculo
+const shapeKF = [[0, R.square], [tM + 0.02, R.circle], [tM + B.beat(1) + 0.06, R.square], [tM + B.beat(2) + 0.06, R.triangle], [tM + B.beat(3) + 0.06, R.star], [tM + B.beat(3) + 0.34, R.circle]];
+const sizeKF = [[0, cover], [tM + 0.02, morphSize]];
+const cxKF = [[0, W / 2], [tM + 0.02, mc.x]];
+const cyKF = [[0, H * 1.5 + cover], [B.beat(3) + 0.02, H / 2], [tM + 0.02, mc.y]];
+const rotKF = [[0, 0], [tM + B.beat(1) + 0.06, 45 * 0], [tM + B.beat(2) + 0.06, 0], [tM + B.beat(3) + 0.06, 18]];
+function morphPath(t) {
+  const r = track(shapeKF, t, 'default');
+  const s = track(sizeKF, t, 'snappy');
+  const cx = track(cxKF, t, 'snappy'), cy = track(cyKF, t, 'snappy');
+  const rot = track(rotKF, t, 'default') * Math.PI / 180;
+  let d = '';
+  for (let i = 0; i < N; i++) {
+    const a = i / N * Math.PI * 2 + rot;
+    d += (i ? 'L' : 'M') + (cx + Math.cos(a) * r[i] * s).toFixed(2) + ' ' + (cy + Math.sin(a) * r[i] * s).toFixed(2);
+  }
+  return { d: d + 'Z', cx, cy, s, rot, r };
+}
+// título e contador rolante
+const s2Size = L.pick({ landscape: 210, portrait: 190, square: 150 });
+Object.assign($('s2title').style, { fontSize: s2Size + 'px', left: safe.x + 'px', top: L.pick({ landscape: safe.y + safe.h * 0.18, portrait: safe.y + safe.h * 0.66, square: safe.y + safe.h * 0.56 }) + 'px' });
+const rollSize = L.pick({ landscape: u * 3.2, portrait: u * 4.6 });
+const rollTop = parseFloat($('s2title').style.top) + s2Size * 0.95;
+Object.assign($('roll').style, { left: safe.x + 'px', top: rollTop + 'px', height: rollSize * 1.3 + 'px', fontSize: rollSize + 'px', color: '#0B0B0D' });
+[...$('rollstack').children].forEach((d) => (d.style.height = rollSize * 1.3 + 'px'));
+Object.assign($('s2cap').style, { left: safe.x + 'px', top: rollTop + rollSize * 2.1 + 'px', fontSize: capSize + 'px' });
+// cursor: visita um vértice antes de cada batida e "clica" nela
+const clickT = [B.beat(1), B.beat(2), B.beat(3)].map((b) => tM + b);
+const cursorTargets = [
+  { x: mc.x + morphSize * 0.95, y: mc.y - morphSize * 0.2 },
+  { x: mc.x + morphSize * 0.62, y: mc.y + morphSize * 0.62 },
+  { x: mc.x - morphSize * 0.05, y: mc.y - morphSize * 0.66 },
+];
+const curKF = [[0, { x: W + 80, y: H * 0.85 }]];
+clickT.forEach((c, i) => curKF.push([c - 0.42, cursorTargets[i]]));
+curKF.push([tM + B.beat(3) + 0.2, { x: W * 1.15, y: H * 1.1 }]);
+$('cursor').style.width = 44 * u / 10.8 + 'px'; $('cursor').style.height = 52 * u / 10.8 + 'px';
+
+function drawS2(t) {
+  const lt = t - tM;
+  const title = $('s2title');
+  title.style.transform = `translateY(${(1 - springProgress(lt - 0.1, 'heavy')) * 40}px)`;
+  title.style.clipPath = `inset(${(1 - springProgress(lt - 0.1, 'heavy')) * 100}% 0 0 0)`;
+  let k = 0; for (const c of clickT) if (t >= c + 0.06) k++;
+  const rollP = track([[0, 0], ...clickT.map((c, i) => [c + 0.06, i + 1])], t, 'snappy');
+  $('rollstack').style.transform = `translateY(${-rollP * rollSize * 1.3}px)`;
+  $('s2cap').style.clipPath = `inset(0 ${100 - springProgress(lt - 0.35, 'snappy') * 100}% 0 0)`;
+  const cur = track(curKF, t, 'snappy');
+  let press = 0; for (const c of clickT) press += springProgress(t - c + 0.08, 'snappy') - springProgress(t - c - 0.04, 'snappy');
+  $('cursor').style.transform = `translate(${cur.x - 4}px, ${cur.y - 4}px) scale(${1 - press * 0.16})`;
+}
+function drawHandles(t, m) {
+  // alças nos vértices "fortes" da forma; acendem quando o cursor clica
+  const g = $('handles');
+  const lt = t - tM;
+  const vis = springProgress(lt - 0.2, 'snappy') - springProgress(t - (tM + B.beat(3) + 0.25), 'snappy');
+  let html = '';
+  const n = 8, hs = Math.max(8, u * 1.1);
+  for (let i = 0; i < n; i++) {
+    const idx = Math.round(i / n * N) % N, a = idx / N * Math.PI * 2 + m.rot;
+    const x = m.cx + Math.cos(a) * m.r[idx] * m.s, y = m.cy + Math.sin(a) * m.r[idx] * m.s;
+    const sc = vis * springProgress(lt - 0.2 - stagger(i, 0.03), 'snappy');
+    if (sc < 0.01) continue;
+    html += `<rect x="${x - hs / 2 * sc}" y="${y - hs / 2 * sc}" width="${hs * sc}" height="${hs * sc}" fill="#EFEAE0" stroke="#0B0B0D" stroke-width="${Math.max(2, u * 0.25)}"/>`;
+  }
+  // linha guia do cursor até o centro
+  g.innerHTML = html;
+}
+
+// ------------------------------------------------------------------ S3: câmera 3D sobre grade de cards
+const labels = ['Spring', '60 fps', 'H.264', '9:16', 'seek(t)', '16:9', '1:1', '120 bpm', 'OKLab', 'Chromium', 'ffmpeg', 'Morph'];
+const cols = L.pick({ landscape: 4, portrait: 3, square: 4 });
+const cw = L.pick({ landscape: 420, portrait: 300, square: 300 }), chh = cw * 0.68, gap = cw * 0.1;
+const rows = Math.ceil(labels.length / cols);
+const world = $('world');
+const cardEls = labels.map((lab, i) => {
+  const el = document.createElement('div');
+  el.className = 'card' + (lab === 'seek(t)' ? ' hot' : '');
+  el.innerHTML = `<div class="n mono" style="font-size:${cw * 0.055}px">${String(i + 1).padStart(2, '0')} / ${String(labels.length).padStart(2, '0')}</div><div class="v" style="font-size:${cw * (lab.length > 7 ? 0.14 : 0.19)}px">${lab}</div>`;
+  const c = i % cols, r = Math.floor(i / cols);
+  const x = (c - (cols - 1) / 2) * (cw + gap) - cw / 2, y = (r - (rows - 1) / 2) * (chh + gap) - chh / 2;
+  Object.assign(el.style, { width: cw + 'px', height: chh + 'px', left: x + 'px', top: y + 'px' });
+  el._c = c; el._r = r; el._x = x + cw / 2; el._y = y + chh / 2;
+  world.appendChild(el);
+  return el;
+});
+const floor = document.createElement('div'); floor.className = 'floor';
+const fw = (cols + 3) * (cw + gap), fh = (rows + 3) * (chh + gap);
+Object.assign(floor.style, { width: fw + 'px', height: fh + 'px', left: -fw / 2 + 'px', top: -fh / 2 + 'px', backgroundSize: `${(cw + gap) / 2}px ${(cw + gap) / 2}px`, transform: 'translateZ(-60px)' });
+world.prepend(floor);
+const hot = cardEls[labels.indexOf('seek(t)')];
+$('cam').style.perspective = L.pick({ landscape: 1500, portrait: 1700 }) + 'px';
+const t3 = B.bar(2);
+const camKF = [
+  [0, { z: -420, rx: 50, rz: -20, x: 0, y: 0 }],
+  [t3 + B.beat(1), { z: -260, rx: 38, rz: -10, x: -(cw + gap) * 0.35, y: 0 }],
+  [t3 + B.beat(2), { z: -120, rx: 26, rz: 6, x: (cw + gap) * 0.3, y: -(chh + gap) * 0.2 }],
+  [t3 + B.beat(3), { z: 260, rx: 10, rz: 0, x: hot._x, y: hot._y }],
+];
+function drawS3(t) {
+  const lt = t - t3;
+  const cam = track(camKF, t, 'default');
+  world.style.transform = `translateZ(${cam.z}px) rotateX(${cam.rx}deg) rotateZ(${cam.rz}deg) translate(${-cam.x}px, ${-cam.y}px)`;
+  cardEls.forEach((el, i) => {
+    const d = stagger(Math.hypot(el._c - (cols - 1) / 2, el._r - (rows - 1) / 2), 0.045) - 0.06;
+    const p = springProgress(lt - d, 'default');
+    const lift = el === hot ? springProgress(t - (t3 + B.beat(2)), 'default') * 90 : 0;
+    el.style.transform = `translateZ(${(1 - p) * -260 + lift}px) rotateX(${(1 - p) * -80}deg)`;
+    el.style.opacity = clamp(p * 4);
+  });
+  floor.style.opacity = clamp(springProgress(lt, 'heavy'));
+}
+
+// ------------------------------------------------------------------ S4: partículas formando a assinatura
+const pc = $('pc'); pc.width = W; pc.height = H;
+const ctx = pc.getContext('2d');
+let P = [];
+const t4 = B.bar(3);
+const wm = L.pick({ landscape: ['AZEVEDO', 'MOTION'], portrait: ['AZE', 'VEDO', 'MOTION'], square: ['AZEVEDO', 'MOTION'] });
+let wmSize = 200;
+let wmTop = L.pick({ landscape: H * 0.5 - wmSize * 0.95, portrait: safe.y + safe.h * 0.2, square: H * 0.5 - wmSize * 0.95 });
+const tagSize = L.pick({ landscape: u * 2.9, portrait: u * 3.6 });
+async function buildParticles() {
+  await document.fonts.load(`400 ${wmSize}px "Archivo Black"`);
+  { // tamanho que faz a linha mais longa ocupar a largura segura
+    const m = document.createElement('canvas').getContext('2d'); m.font = `400 100px "Archivo Black"`;
+    const widest = Math.max(...wm.map((l) => m.measureText(l).width));
+    wmSize = Math.floor(100 * safe.w * L.pick({ landscape: 0.86, portrait: 0.98, square: 0.96 }) / widest);
+    wmTop = L.pick({ landscape: H * 0.5 - wmSize * 1.05, portrait: safe.cy - wmSize * 1.55, square: H * 0.5 - wmSize * 1.1 });
+  }
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const o = off.getContext('2d');
+  o.fillStyle = '#fff'; o.font = `400 ${wmSize}px "Archivo Black"`; o.textBaseline = 'top';
+  wm.forEach((line, i) => o.fillText(line, safe.x - wmSize * 0.03, wmTop + i * wmSize * 0.9));
+  const data = o.getImageData(0, 0, W, H).data;
+  const step = L.pick({ landscape: 6, portrait: 6, square: 5 });
+  const r = rng(9);
+  for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) {
+    if (data[(y * W + x) * 4 + 3] > 128) {
+      const ang = r() * Math.PI * 2, rad = Math.max(W, H) * (0.15 + r() * 0.75);
+      P.push({ tx: x, ty: y, sx: W / 2 + Math.cos(ang) * rad, sy: H / 2 + Math.sin(ang) * rad, d: (x - safe.x) / safe.w * 0.4 + r() * 0.08, s: 0.5 + r() * 1.4, hot: r() < 0.025, sw: (r() - 0.5) });
+    }
+  }
+  const lastLineY = wmTop + (wm.length - 1) * wmSize * 0.9 + wmSize * 0.95;
+  const tag = $('tag');
+  tag.innerHTML = 'estúdio de motion graphics feito em código'.split(' ').map((w) => `<span>${w}&nbsp;</span>`).join('');
+  Object.assign(tag.style, { left: safe.x + 'px', top: lastLineY + wmSize * 0.25 + 'px', fontSize: tagSize + 'px' });
+}
+function drawS4(t) {
+  const lt = t - t4;
+  ctx.clearRect(0, 0, W, H);
+  const shockT = B.beat(2), cx = safe.x + safe.w * 0.35, cy = wmTop + wmSize;
+  const ps = L.pick({ landscape: 6, portrait: 6, square: 5 }) * 0.86;
+  for (const p of P) {
+    const k = springProgress(lt - p.d, 'default');
+    let x = lerp(p.sx, p.tx, k), y = lerp(p.sy, p.ty, k);
+    // giro durante o voo
+    const sw = (1 - k) * p.sw * 260;
+    x += -(p.ty - p.sy) / 1000 * sw; y += (p.tx - p.sx) / 1000 * sw;
+    // onda de choque radial no 2º tempo do compasso
+    const dist = Math.hypot(p.tx - cx, p.ty - cy), dt = lt - shockT - dist / 2600;
+    if (dt > 0) {
+      const amp = 34 * Math.exp(-dt * 7) * Math.sin(dt * 26);
+      x += (p.tx - cx) / (dist + 1) * amp; y += (p.ty - cy) / (dist + 1) * amp;
+    }
+    ctx.fillStyle = p.hot ? '#FF4A1C' : '#EFEAE0';
+    const sz = ps * lerp(p.s, 1, k);
+    ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz);
+  }
+  const words = $('tag').children;
+  [...words].forEach((w, i) => { const p = springProgress(lt - shockT - stagger(i, 0.045), 'snappy'); w.style.transform = `translateY(${(1 - p) * 120}%)`; });
+}
+
+// ------------------------------------------------------------------ seek(t): desenha o frame EXATO
+const sceneEls = [$('s1'), $('s2'), $('s3'), $('s4')];
+function seek(t) {
+  const { index } = sceneAt(SCENES, t);
+  sceneEls.forEach((el, i) => (el.style.display = i === index ? 'block' : 'none'));
+  const light = index === 1;
+  $('hud').style.color = light ? '#0B0B0D' : '#EFEAE0';
+  $('hTR').textContent = `${String(index + 1).padStart(2, '0')}/04 · ${SCENES[index].name}`;
+  $('hBL').textContent = tc(t);
+  $('hBR').querySelector('.dot').style.transform = `scale(${0.6 + 0.6 * B.pulse(t, 7)})`;
+  // grão muda a 24 qps (textura de filme), de forma determinística
+  const gf = Math.floor(t * 24);
+  $('grain').style.backgroundPosition = `${Math.floor(hash(gf) * 256)}px ${Math.floor(hash(gf + 99) * 256)}px`;
+
+  const morphOn = t >= B.beat(3) - 0.05 && t < B.bar(2);
+  $('morph').style.display = morphOn ? 'block' : 'none';
+  $('cursor').style.display = index === 1 ? 'block' : 'none';
+  if (morphOn) { const m = morphPath(t); $('mpath').setAttribute('d', m.d); if (index === 1) drawHandles(t, m); else $('handles').innerHTML = ''; }
+
+  if (index === 0) drawS1(t);
+  else if (index === 1) drawS2(t);
+  else if (index === 2) drawS3(t);
+  else drawS4(t);
+}
+window.READY = buildParticles();
+window.seek = seek;
+seek(0);
+</script>
+</body>
+</html>
