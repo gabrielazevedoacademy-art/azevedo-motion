@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>05-azevedo-academy</title>
+<link rel="stylesheet" href="/node_modules/@fontsource/anton/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/bebas-neue/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/700.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/jetbrains-mono/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/jetbrains-mono/700.css">
+<style>
+  /* paleta amostrada do banner real (assets/azevedo-academy/colors.json) */
+  :root { --bg:#0E0C09; --bg2:#15120C; --or:#F97102; --orD:#C64906; --li:#BBE000; --liH:#DEED1E; --paper:#F4F1EA; --mute:#8A857C; --yt:#0F0F0F; --ytp:#212121; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { width:var(--W); height:var(--H); overflow:hidden; background:var(--bg); }
+  body { font-family:Inter, sans-serif; color:var(--paper); -webkit-font-smoothing:antialiased; }
+  .abs { position:absolute; left:0; top:0; }
+  #bgc { position:absolute; inset:0; }
+  .scene { position:absolute; inset:0; overflow:hidden; display:none; }
+  .inner { position:absolute; inset:0; transform-origin:50% 50%; }
+  .anton { font-family:Anton, sans-serif; text-transform:uppercase; line-height:1; white-space:nowrap; }
+  .bebas { font-family:'Bebas Neue', sans-serif; line-height:.88; white-space:nowrap; }
+  .mono { font-family:'JetBrains Mono', monospace; font-weight:500; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
+  .ch { display:inline-block; }
+  .mask { position:absolute; overflow:hidden; white-space:nowrap; }
+  .mask > span { display:inline-block; }
+  .crop { display:block; }
+  .screen { mix-blend-mode:screen; }
+
+  /* S1 */
+  #cx .ch { -webkit-text-stroke-width:var(--sw); }
+  #tangle { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  #rule1 { position:absolute; background:var(--li); transform-origin:left center; }
+
+  /* S2 */
+  #banner { position:absolute; perspective:1600px; }
+  .tile { position:absolute; overflow:hidden; backface-visibility:hidden; }
+  .tile img { position:absolute; }
+  .tile .seam { position:absolute; inset:0; border:2px solid var(--li); }
+  #glint { position:absolute; top:-20%; height:140%; mix-blend-mode:screen; pointer-events:none;
+           background:linear-gradient(90deg, transparent 0%, rgba(222,237,30,.0) 20%, rgba(222,237,30,.42) 46%, rgba(255,255,255,.65) 50%, rgba(222,237,30,.42) 54%, transparent 80%); }
+  .q { position:absolute; left:0; top:0; border-radius:50%; overflow:hidden; }
+  .q img { width:100%; height:100%; display:block; }
+  .glow { position:absolute; border-radius:50%; background:radial-gradient(closest-side, rgba(249,113,2,.55), rgba(249,113,2,.18) 60%, transparent); }
+  svg.ring { position:absolute; overflow:visible; }
+
+  /* S3 */
+  #rail { position:absolute; left:0; top:0; width:100%; height:100%; }
+  .thumb { position:absolute; overflow:hidden; border-radius:var(--r); background:#000; }
+  .thumb img { position:absolute; inset:0; width:100%; height:100%; transform-origin:50% 50%; }
+  .chip { position:absolute; background:var(--li); color:#0E0C09; font-family:'JetBrains Mono'; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; white-space:nowrap; transform-origin:left center; }
+  .frame { position:absolute; border:3px solid var(--li); border-radius:12px; }
+  .bar { position:absolute; background:var(--li); transform-origin:center top; }
+  .ripple { position:absolute; border-radius:50%; border:4px solid var(--li); }
+
+  /* S4 */
+  #panel { position:absolute; background:var(--ytp); border-radius:22px; box-shadow:0 30px 80px rgba(0,0,0,.45); transform-origin:left center; }
+  .col { position:absolute; overflow:hidden; }
+  .strip { position:absolute; left:0; top:0; width:100%; }
+  .strip div { text-align:center; }
+
+  /* S5 */
+  .spark { position:absolute; left:0; top:0; }
+
+  /* cursor, cortina, HUD, grão */
+  #cursor { position:absolute; left:0; top:0; display:none; z-index:8; transform-origin:4px 4px; filter:drop-shadow(0 8px 14px rgba(0,0,0,.5)); }
+  #wipe { position:absolute; display:none; z-index:9; }
+  #wipe > div { position:absolute; top:0; height:100%; }
+  #hud { position:absolute; inset:0; pointer-events:none; z-index:10; color:var(--paper); }
+  #hud div { position:absolute; white-space:nowrap; opacity:.72; }
+  #hud .dot { display:inline-block; width:.62em; height:.62em; border-radius:50%; background:var(--li); margin-right:.5em; }
+  #grain { position:absolute; inset:-64px; z-index:11; opacity:.06; mix-blend-mode:overlay; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+
+<section class="scene" id="s1"><div class="inner" id="s1in">
+  <div class="mask anton" id="l1"><span id="l1t">Simplificar</span></div>
+  <div class="mask anton" id="lO"><span id="lOt">O</span></div>
+  <div class="abs anton" id="cx">Complexo.</div>
+  <svg id="tangle"></svg>
+  <div id="rule1"></div>
+  <div class="mask mono" id="cap1"><span>Inteligência Artificial · Design · Tecnologia</span></div>
+</div></section>
+
+<section class="scene" id="s2"><div class="inner" id="s2in">
+  <div id="banner"></div>
+  <div class="glow" id="avGlow"></div>
+  <div class="abs" id="av"></div>
+  <svg class="ring" id="avRing"><circle fill="none" stroke="#F97102" stroke-linecap="round"/></svg>
+  <div class="mask" id="hdr"><img class="crop" src="/assets/azevedo-academy/screens/header_name_alpha@3x.png"></div>
+  <div class="mask mono" id="cap2"><span>No ar desde 3 de dez. de 2025 · Brasil</span></div>
+</div></section>
+
+<section class="scene" id="s3"><div class="inner" id="s3in"><div id="rail"></div></div></section>
+
+<section class="scene" id="s4"><div class="inner" id="s4in">
+  <div id="panel"><img class="crop" id="panelImg" src="/assets/azevedo-academy/screens/rows_stats@3x.png"><div class="frame" id="rowFrame"></div></div>
+  <svg id="link" class="abs" style="overflow:visible"><path fill="none" stroke="#BBE000" stroke-linecap="round"/></svg>
+  <div class="abs" id="num"></div>
+  <div class="mask bebas" id="numLabel"><span>Visualizações</span></div>
+  <div id="rule4" class="abs" style="background:var(--li);transform-origin:left center"></div>
+  <div class="mask mono" id="cap4"><span>Total do canal · desde dez. 2025</span></div>
+</div></section>
+
+<section class="scene" id="s5"><div class="inner" id="s5in">
+  <div class="glow" id="sigGlow"></div>
+  <div class="abs" id="sigAv" style="border-radius:50%;overflow:hidden"><img src="/assets/azevedo-academy/avatar_900.jpg" style="width:100%;height:100%;display:block" id="sigAvImg"></div>
+  <svg class="ring" id="sigRing"><circle fill="none" stroke="#F97102" stroke-linecap="round"/></svg>
+  <div class="mask bebas" id="n1"><span id="n1t">AZEVEDO</span></div>
+  <div class="mask bebas" id="n2"><span id="n2t">ACADEMY</span></div>
+  <div class="mask mono" id="url"><span>youtube.com/@Azevedo.Academy</span></div>
+  <div class="abs" id="rings5"></div>
+  <img class="abs" id="subBtn" style="border-radius:999px" src="/assets/azevedo-academy/screens/subscribe_dark@3x.png">
+  <img class="abs" id="bell" src="/assets/azevedo-academy/bell_alpha.png">
+  <div class="abs" id="sparks"></div>
+  <div class="mask mono" id="cap5"><span>▶ Novo vídeo toda semana</span></div>
+</div></section>
+
+<svg id="cursor" width="44" height="54" viewBox="0 0 44 54"><path d="M4 4 L4 43 L14 33 L21 49 L28 46 L21 30 L36 30 Z" fill="#F4F1EA" stroke="#0E0C09" stroke-width="3" stroke-linejoin="round"/></svg>
+<div id="wipe"><div style="background:#15120C"></div><div style="background:#F97102"></div><div style="background:#BBE000"></div></div>
+<div id="hud" class="mono">
+  <div id="hTL">Azevedo — Academy</div>
+  <div id="hTR"></div>
+  <div id="hBL"></div>
+  <div id="hBR"><span class="dot"></span>120 BPM</div>
+</div>
+<div id="grain"></div>
+
+<script type="module">
+import { springProgress as sp, track, inOut, stagger, clamp, lerp, rng, hash, noise, mixColor, beats, sceneAt } from '/lib/motion.js';
+import { createLayout, applyRoot, fitText } from '/lib/layout.js';
+
+await Promise.all(['400 100px Anton', '400 100px "Bebas Neue"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"', '500 20px Inter']
+  .map((f) => document.fonts.load(f, 'AZÉÇÃÕÍ0123456789·@./▶')));
+const L = applyRoot(createLayout());
+const { W, H, u, safe } = L;
+const P = L.isPortrait;
+const B = beats(120, 20);                         // 1 batida = 0,5 s · 1 compasso = 2 s
+const A = '/assets/azevedo-academy/';
+const C = { bg: '#0E0C09', bg2: '#15120C', or: '#F97102', orD: '#C64906', li: '#BBE000', liH: '#DEED1E', paper: '#F4F1EA', mute: '#8A857C' };
+const $ = (id) => document.getElementById(id);
+const mk = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; };
+const pos = (e, x, y, w, h) => { e.style.left = x + 'px'; e.style.top = y + 'px'; if (w != null) e.style.width = w + 'px'; if (h != null) e.style.height = h + 'px'; };
+const chars = (e) => { const t = e.textContent; e.innerHTML = [...t].map((c) => `<span class="ch">${c === ' ' ? '&nbsp;' : c}</span>`).join(''); return [...e.querySelectorAll('.ch')]; };
+const rise = (list, t, t0, step = 0.03, preset = 'heavy') => list.forEach((c, k) => { const p = sp(t - t0 - k * step, preset); c.style.transform = `translate(0,${(1 - p) * 150}%)`; });
+const wipeIn = (e, p) => { e.style.clipPath = `inset(-20% ${(1 - clamp(p)) * 100}% -20% -2%)`; };
+const pulse = (t, c, a = 0.05, b = 0.08) => sp(t - (c - a), 'snappy') - sp(t - (c + b), 'snappy');
+// impulso amortecido (resposta de mola a um empurrão): começa em 0, oscila e assenta em 0
+const kick = (t, t0, preset = 'default') => { const o = typeof preset === 'string' ? { preset } : preset; return sp(t - t0, { ...o, velocity: 1 }) - sp(t - t0, o); };
+const shake = (t, t0, amp) => (t < t0 ? 0 : amp * kick(t, t0, { stiffness: 900, damping: 18 }) * 30);
+function measure(sec, fn) { const s = $(sec); const d = s.style.display; s.style.display = 'block'; const r = fn(); s.style.display = d; return r; }
+
+const DATA = await fetch(A + 'channel.json').then((r) => r.json());
+const VIDS = DATA.em_alta_top3.map((v, i) => ({ ...v, meta: A + `screens/card${i + 1}_meta_alpha.png`, click: [[0.6, 0.42], [0.66, 0.5], [0.58, 0.38]][i] }));
+
+const SCENES = [
+  { name: 'gancho', start: 0, end: 3 },
+  { name: 'o canal', start: 3, end: 6 },
+  { name: 'em alta #1', start: 6, end: 8 },
+  { name: 'em alta #2', start: 8, end: 10 },
+  { name: 'em alta #3', start: 10, end: 12 },
+  { name: 'o número', start: 12, end: 16 },
+  { name: 'assinatura', start: 16, end: 20 },
+];
+const STORY = [0, 1, 2, 2, 2, 3, 4];
+const SEC = ['s1', 's2', 's3', 's3', 's3', 's4', 's5'];
+const CUTS = [3, 6, 12, 16];
+window.DURATION = 20;
+window.SCENES = SCENES;
+window.POSTER_T = 19.6;
+
+// ------------------------------------------------------------------ grão
+{
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), img = g.createImageData(256, 256), r = rng(42);
+  for (let i = 0; i < img.data.length; i += 4) { const v = r() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  $('grain').style.backgroundImage = `url(${c.toDataURL()})`;
+}
+
+// ------------------------------------------------------------------ fundo: riscos de luz do banner + estrelas de 4 pontas
+const bgc = $('bgc'); bgc.width = W; bgc.height = H;
+const g = bgc.getContext('2d');
+const STREAKS = [], STARS = [];
+{
+  const r = rng(11);
+  for (let i = 0; i < 26; i++) STREAKS.push({ side: i % 2, o: r(), len: 0.35 + r() * 0.6, w: 1 + r() * 4, a: 0.25 + r() * 0.75, sp: 0.4 + r() * 0.9 });
+  for (let i = 0; i < 30; i++) STARS.push({ x: r(), y: r(), s: 0.4 + r() * 1.1, ph: r() * 6.28, c: r() < 0.5 ? 0 : 1 });
+}
+function star(x, y, R, rot = 0) {
+  g.beginPath();
+  for (let k = 0; k < 8; k++) {
+    const a = rot + k * Math.PI / 4, rr = k % 2 ? R * 0.22 : R;
+    g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+  }
+  g.closePath(); g.fill();
+}
+const energyKF = [[0, 1], [5.9, 0.85], [6, 0.35], [12, 0.6], [16, 1]];
+function drawBg(t) {
+  const e = track(energyKF, t, 'snappy');
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+  // brilhos difusos: laranja embaixo à esquerda, lima à direita (como no banner)
+  const D = Math.max(W, H);
+  let rg = g.createRadialGradient(0, H, 0, 0, H, D * 0.6);
+  rg.addColorStop(0, `rgba(249,113,2,${0.2 * e})`); rg.addColorStop(1, 'rgba(249,113,2,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  rg = g.createRadialGradient(W * 1.05, H * 0.45, 0, W * 1.05, H * 0.45, D * 0.5);
+  rg.addColorStop(0, `rgba(187,224,0,${0.13 * e})`); rg.addColorStop(1, 'rgba(187,224,0,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  // riscos diagonais (≈ -38°), deslizando ao longo da própria direção
+  const a = -0.66, dx = Math.cos(a), dy = Math.sin(a);
+  g.lineCap = 'round';
+  for (const s of STREAKS) {
+    const L0 = D * s.len;
+    const slide = ((t * s.sp * 0.22 + s.o) % 1) * D * 0.5;
+    let x0, y0;
+    if (s.side === 0) { x0 = -W * 0.2 + s.o * W * 0.3; y0 = H * (1.05 + s.o * 0.12); }
+    else { x0 = W * (0.74 + s.o * 0.4); y0 = H * (0.85 + s.o * 0.5); }
+    x0 += dx * slide; y0 += dy * slide;
+    const x1 = x0 + dx * L0, y1 = y0 + dy * L0;
+    const col = s.side === 0 ? '249,113,2' : '187,224,0';
+    const lg = g.createLinearGradient(x0, y0, x1, y1);
+    lg.addColorStop(0, `rgba(${col},0)`); lg.addColorStop(0.55, `rgba(${col},${s.a * 0.5 * e})`); lg.addColorStop(1, `rgba(${col},0)`);
+    g.strokeStyle = lg; g.lineWidth = s.w * u * 0.12; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+  }
+  // estrelas de 4 pontas piscando no pulso da batida
+  const pul = B.pulse(t, 6);
+  for (const s of STARS) {
+    const tw = 0.5 + 0.5 * Math.sin(t * 2.4 + s.ph);
+    const R = u * 0.9 * s.s * (0.45 + 0.55 * tw) * (1 + 0.35 * pul) * (0.5 + 0.5 * e);
+    g.fillStyle = s.c ? `rgba(222,237,30,${0.85 * e})` : `rgba(255,140,40,${0.85 * e})`;
+    star(s.x * W, s.y * H, R, Math.PI / 4 * 0);
+  }
+}
+
+// ------------------------------------------------------------------ HUD
+const hudSize = L.pick({ landscape: u * 1.45, portrait: u * 2.3 });
+for (const id of ['hTL', 'hTR', 'hBL', 'hBR']) $(id).style.fontSize = hudSize + 'px';
+const hy0 = L.pick({ landscape: u * 3.6, portrait: safe.y - hudSize * 2.4 });
+const hy1 = L.pick({ landscape: H - u * 3.6 - hudSize, portrait: safe.y + safe.h + hudSize * 0.8 });
+const hxL = safe.x, hxR = W - safe.x - safe.w;
+Object.assign($('hTL').style, { left: hxL + 'px', top: hy0 + 'px' });
+Object.assign($('hTR').style, { right: hxR + 'px', top: hy0 + 'px' });
+Object.assign($('hBL').style, { left: hxL + 'px', top: hy1 + 'px' });
+Object.assign($('hBR').style, { right: hxR + 'px', top: hy1 + 'px' });
+const tc = (t) => { const f = Math.floor(t * 60 + 1e-6), s = Math.floor(f / 60); return `00:00:${String(s).padStart(2, '0')}:${String(f % 60).padStart(2, '0')}`; };
+const STORY_NAMES = ['gancho', 'o canal', 'em alta', 'o número', 'assinatura'];
+
+// ------------------------------------------------------------------ cortina diagonal (cobre os cortes 3, 6, 12 e 16 s)
+const wipe = $('wipe');
+const skewDeg = 14, skewPad = H * 1.2 * Math.tan(skewDeg * Math.PI / 180) / 2 + 20;
+const wipeW = W * 1.7 + skewPad * 2;
+pos(wipe, 0, -H * 0.1, wipeW, H * 1.2);
+{
+  const [d, o, l] = wipe.children;
+  Object.assign(d.style, { left: 0, width: wipeW * 0.22 + 'px' });
+  Object.assign(o.style, { left: wipeW * 0.22 + 'px', width: wipeW * 0.7 + 'px' });
+  Object.assign(l.style, { left: wipeW * 0.92 + 'px', width: wipeW * 0.08 + 'px' });
+}
+function drawWipe(t) {
+  const c = CUTS.find((k) => t > k - 0.2 && t < k + 0.9);
+  if (c == null) { wipe.style.display = 'none'; return; }
+  // uma mola só, criticamente amortecida, que cruza 50% exatamente no corte (w0·τ ≈ 1,68 → τ = 0,2 s)
+  const p = sp(t - (c - 0.2), { stiffness: 70, damping: 16.8 });
+  const x = lerp(-(wipeW + skewPad), W + skewPad, p);
+  wipe.style.display = 'block';
+  wipe.style.transform = `translateX(${x}px) skewX(${-skewDeg}deg)`;
+}
+
+// ------------------------------------------------------------------ cursor (seta de sistema)
+const cursor = $('cursor');
+const cs = L.pick({ landscape: 1.25, portrait: 1.6 });
+cursor.style.width = 44 * cs + 'px'; cursor.style.height = 54 * cs + 'px';
+
+// ================================================================== S1 · GANCHO — "simplificar o complexo"
+const l1 = $('l1'), lO = $('lO'), cx = $('cx');
+const s1Size = fitText($('l1t'), L.pick({ landscape: safe.w * 0.74, portrait: safe.w }), { max: 430 });
+for (const e of [l1, lO, cx]) e.style.fontSize = s1Size + 'px';
+const lh1 = s1Size * 1.04;
+const blk = lh1 * 2 + s1Size * 0.45;
+const s1y = L.pick({ landscape: H * 0.5 - blk * 0.5 - s1Size * 0.06, portrait: safe.y + safe.h * 0.42 - blk * 0.5 });
+const mH = s1Size * 1.16;               // caixa da máscara maior que a linha: nada é cortado
+pos(l1, safe.x - s1Size * 0.02, s1y - s1Size * 0.08, null, mH);
+const oW = measure('s1', () => $('lOt').getBoundingClientRect().width);
+const spaceW = s1Size * 0.22;
+pos(lO, safe.x - s1Size * 0.02, s1y + lh1 - s1Size * 0.08, null, mH);
+const l1chars = chars($('l1t'));
+const oChar = chars($('lOt'));
+const cxChars = chars(cx);
+pos(cx, safe.x + oW + spaceW, s1y + lh1);
+cx.style.setProperty('--sw', Math.max(2, s1Size * 0.012) + 'px');
+// posições finais de cada letra de COMPLEXO (centro, relativo ao quadro)
+const cxBase = measure('s1', () => cxChars.map((c) => { const r = c.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }));
+const cxEnd = measure('s1', () => cx.getBoundingClientRect().right);
+// caos: cada letra espalhada pelo quadro, girada e em outra escala (com semente)
+const CHAOS = cxChars.map((_, k) => {
+  const ax = W * (0.1 + 0.8 * hash(k * 13 + 5)), ay = H * (0.14 + 0.72 * hash(k * 7 + 3));
+  return { dx: ax - cxBase[k].x, dy: ay - cxBase[k].y, rot: (hash(k * 31 + 1) - 0.5) * 110, sc: 0.5 + hash(k * 17 + 9) * 0.9 };
+});
+const TANGLE = []; for (let k = 0; k < cxChars.length; k++) { TANGLE.push([k, (k + 1) % cxChars.length]); TANGLE.push([k, (k + 3) % cxChars.length]); }
+const tangle = $('tangle');
+const rule1 = $('rule1');
+const r1y = s1y + lh1 * 2 + s1Size * 0.04;
+pos(rule1, safe.x, r1y, Math.min(safe.w, cxEnd - safe.x), Math.max(5, u * 0.7));
+const cap1 = $('cap1');
+const capSize = L.pick({ landscape: u * 2.1, portrait: u * 3.1 });
+cap1.style.fontSize = capSize + 'px';
+pos(cap1, safe.x, r1y + u * 2.2, null, capSize * 1.4);
+if (P) { // no 9:16 a legenda quebra em duas linhas
+  cap1.firstElementChild.innerHTML = 'Inteligência Artificial<br>· Design · Tecnologia';
+  cap1.style.height = capSize * 2.8 + 'px'; cap1.style.whiteSpace = 'normal'; cap1.style.lineHeight = '1.4';
+}
+
+function drawS1(t) {
+  rise(l1chars, t, B.beat(1) - 0.1, 0.028);
+  rise(oChar, t, B.beat(2) - 0.06, 0);
+  let lines = '';
+  const cur = [];
+  cxChars.forEach((c, k) => {
+    const ch = CHAOS[k];
+    const pin = sp(t + 0.32 - k * 0.05, 'snappy');                 // já em movimento no frame 0
+    const p = sp(t - B.beat(2) - k * 0.014, 'snappy');             // encaixe na batida 2
+    const q = 1 - p;
+    const dx = (ch.dx + noise(t * 0.9 + k * 3.1, 1) * u * 5) * q;
+    const dy = (ch.dy + noise(t * 0.9 + k * 3.1, 2) * u * 5) * q;
+    const rot = (ch.rot + noise(t * 0.7 + k, 3) * 14) * q;
+    const sc = lerp(ch.sc, 1, p) * pin;
+    c.style.transform = `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${sc})`;
+    c.style.color = `rgba(249,113,2,${p})`;
+    c.style.webkitTextStrokeColor = mixColor(C.li, C.or, p);
+    cur.push({ x: cxBase[k].x + dx, y: cxBase[k].y + dy, a: q * pin });
+  });
+  for (const [i, j] of TANGLE) {
+    const a = Math.min(cur[i].a, cur[j].a);
+    if (a < 0.02) continue;
+    lines += `<line x1="${cur[i].x}" y1="${cur[i].y}" x2="${cur[j].x}" y2="${cur[j].y}" stroke="#BBE000" stroke-opacity="${(a * 0.55).toFixed(3)}" stroke-width="${Math.max(1.5, u * 0.18)}"/>`;
+    lines += `<circle cx="${cur[i].x}" cy="${cur[i].y}" r="${u * 0.45}" fill="#BBE000" fill-opacity="${a.toFixed(3)}"/>`;
+  }
+  tangle.innerHTML = lines;
+  rule1.style.transform = `scaleX(${sp(t - B.beat(3), 'snappy')})`;
+  cap1.firstElementChild.style.transform = `translateY(${(1 - sp(t - B.beat(3) - 0.06, 'snappy')) * 150}%)`;
+  const push = 1 + 0.05 * sp(t - B.beat(2), { stiffness: 14, damping: 7.5 });
+  $('s1in').style.transform = `translate(${shake(t, B.beat(2), u * 0.5)}px, ${shake(t, B.beat(2) + 0.01, u * 0.35)}px) scale(${push})`;
+}
+
+// ================================================================== S2 · O CANAL — banner e foto se montam
+const BW = P ? W * 0.94 : safe.w, BH = BW * 428 / 2048;
+const D2 = P ? 440 : 330;
+const HW = P ? safe.w : 1000, HH = HW * 225 / 1050;
+const capS2 = capSize;
+// alturas do bloco para centralizar verticalmente na área segura
+const s2H = P ? BH + D2 * 0.9 + 40 + HH + 26 + capS2 * 2.8 : BH + D2 * 0.68 + Math.max(0, 36 + HH + 30 + capS2 * 1.4 - D2 * 0.68);
+const by = safe.y + (safe.h - s2H) * 0.5;
+const bx = P ? (W - BW) / 2 : safe.x;
+const banner = $('banner');
+pos(banner, bx, by, BW, BH);
+const cols = P ? 6 : 8, rows = 2;
+const TILES = [];
+for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+  const i = TILES.length;
+  const tw = BW / cols, th = BH / rows;
+  const tile = mk('div', 'tile', banner);
+  pos(tile, c * tw, r * th, tw + 0.6, th + 0.6);
+  const im = mk('img', '', tile); im.src = A + 'banner_strip.jpg';
+  pos(im, -c * tw, -r * th, BW, BH);
+  const seam = mk('div', 'seam', tile);
+  TILES.push({ tile, seam, dx: (hash(i * 3 + 1) - 0.5) * W * 0.9, dy: (hash(i * 3 + 2) - 0.5) * H * 0.9, z: -250 - hash(i * 5 + 7) * 650, ry: (hash(i * 11 + 4) - 0.5) * 160, rx: (hash(i * 13 + 2) - 0.5) * 120 });
+}
+const bannerFull = mk('img', '', banner); bannerFull.src = A + 'banner_strip.jpg'; pos(bannerFull, 0, 0, BW, BH); bannerFull.style.position = 'absolute';
+const glint = mk('div', '', banner); glint.id = 'glint'; pos(glint, 0, -BH * 0.2, BW * 0.5, BH * 1.4);
+const ax2 = P ? safe.x : safe.x + 50, ay2 = by + BH - D2 * (P ? 0.1 : 0.32);
+const av = $('av'); pos(av, ax2, ay2, D2, D2);
+const QUADS = [[-1, -1, '0 50% 50% 0'], [1, -1, '0 0 50% 50%'], [-1, 1, '50% 50% 0 0'], [1, 1, '50% 0 0 50%']].map(([dx, dy, ins], k) => {
+  const q = mk('div', 'q', av); pos(q, 0, 0, D2, D2); q.style.clipPath = `inset(${ins})`;
+  const im = mk('img', '', q); im.src = A + 'avatar_900.jpg';
+  return { q, dx, dy, rot: (k % 2 ? 1 : -1) * 35 };
+});
+const avFull = mk('div', 'q', av); pos(avFull, 0, 0, D2, D2); mk('img', '', avFull).src = A + 'avatar_900.jpg';
+const ringPad = D2 * 0.06;
+const avRing = $('avRing'); pos(avRing, ax2 - ringPad, ay2 - ringPad, D2 + ringPad * 2, D2 + ringPad * 2);
+const ringR = D2 / 2 + ringPad * 0.55, circ = 2 * Math.PI * ringR;
+{ const c = avRing.firstElementChild; c.setAttribute('cx', D2 / 2 + ringPad); c.setAttribute('cy', D2 / 2 + ringPad); c.setAttribute('r', ringR); c.setAttribute('stroke-width', Math.max(4, D2 * 0.018)); c.setAttribute('stroke-dasharray', circ); c.setAttribute('transform', `rotate(-90 ${D2 / 2 + ringPad} ${D2 / 2 + ringPad})`); }
+pos($('avGlow'), ax2 - D2 * 0.45, ay2 - D2 * 0.45, D2 * 1.9, D2 * 1.9);
+const hx = P ? safe.x : ax2 + D2 + 48, hy = P ? ay2 + D2 + 40 : by + BH + 36;
+const hdr = $('hdr'); pos(hdr, hx, hy, HW, HH); hdr.firstElementChild.style.width = HW + 'px';
+const cap2 = $('cap2'); cap2.style.fontSize = capS2 + 'px'; cap2.style.color = C.li;
+pos(cap2, hx, hy + HH + 26, null, capS2 * 1.4);
+if (P) { cap2.firstElementChild.innerHTML = 'No ar desde 3 de dez. de 2025<br>Brasil'; cap2.style.height = capS2 * 2.8 + 'px'; cap2.style.whiteSpace = 'normal'; cap2.style.lineHeight = '1.4'; }
+
+function drawS2(t) {
+  const t0 = 3;
+  TILES.forEach((T, i) => {
+    const p = sp(t - (t0 - 0.14 + stagger(i, 0.036, { order: 'random', total: TILES.length, seed: 5 })), 'default');
+    const q = 1 - p;
+    T.tile.style.transform = `translate3d(${T.dx * q}px,${T.dy * q}px,${T.z * q}px) rotateX(${T.rx * q}deg) rotateY(${T.ry * q}deg)`;
+    T.tile.style.opacity = clamp(p * 3);
+    T.seam.style.opacity = clamp(p * 3) * (1 - sp(t - 3.95, 'snappy'));
+  });
+  bannerFull.style.display = t >= 4.4 ? 'block' : 'none';
+  avFull.style.display = t >= 4.5 ? 'block' : 'none';
+  const rr = sp(t - 3.95, 'snappy');
+  banner.style.clipPath = rr > 0.01 ? `inset(0 round ${rr * u * 1.6}px)` : 'none';
+  const gl = sp(t - B.beat(10) + 0.12, { stiffness: 40, damping: 12.6 });
+  glint.style.transform = `translateX(${lerp(-BW * 0.55, BW * 1.1, gl)}px) skewX(-20deg)`;
+  QUADS.forEach((Q, k) => {
+    const p = sp(t - (3.72 + k * 0.07), 'heavy'), q = 1 - p;
+    Q.q.style.transform = `translate(${Q.dx * q * D2 * 1.5}px,${Q.dy * q * D2 * 1.5}px) rotate(${Q.rot * q}deg)`;
+    Q.q.style.opacity = clamp(p * 4);
+  });
+  const lock = sp(t - B.beat(9) + 0.08, 'snappy');
+  avRing.firstElementChild.setAttribute('stroke-dashoffset', circ * (1 - lock));
+  $('avGlow').style.opacity = 0.9 * lock;
+  $('avGlow').style.transform = `scale(${0.7 + 0.3 * lock})`;
+  av.style.transform = `scale(${1 + 0.06 * kick(t, B.beat(9), 'snappy') * 40})`;
+  const hp = sp(t - B.beat(9) - 0.02, 'snappy');
+  wipeIn(hdr, hp); hdr.firstElementChild.style.transform = `translateX(${(1 - hp) * -u * 4}px)`;
+  cap2.firstElementChild.style.transform = `translateY(${(1 - sp(t - B.beat(9) - 0.3, 'snappy')) * 150}%)`;
+  const push = 1 + 0.04 * sp(t - t0, { stiffness: 9, damping: 6 });
+  $('s2in').style.transform = `scale(${push})`;
+}
+
+// ================================================================== S3 · TRÊS VÍDEOS REAIS (Vídeos → Em alta)
+const TW = P ? safe.w : Math.round(W * 0.52), TH = TW * 9 / 16;
+const MH = TW * 201 / 1260;
+const chipS = L.pick({ landscape: u * 1.9, portrait: u * 2.8 });
+const ty3 = P ? safe.y + chipS * 3.6 : (H - (TH + 26 + MH)) / 2;
+const tx3 = safe.x;
+const rx3 = tx3 + TW + u * 10, rw3 = safe.x + safe.w - rx3;     // coluna direita (16:9)
+const rail = $('rail');
+const CARDS = VIDS.map((v, i) => {
+  const g0 = mk('div', 'abs', rail); g0.style.width = W + 'px'; g0.style.height = H + 'px'; g0.style.left = i * W + 'px';
+  const th = mk('div', 'thumb', g0); pos(th, tx3, ty3, TW, TH); th.style.setProperty('--r', u * 1.3 + 'px');
+  const im = mk('img', '', th); im.src = A + `thumbs/${v.id}.jpg`;
+  const meta = mk('div', 'abs', g0); pos(meta, tx3, ty3 + TH + 26, TW, MH); meta.style.transformOrigin = '0 0';
+  const mi = mk('img', 'crop', meta); mi.src = v.meta; mi.style.width = TW + 'px';
+  const frame = mk('div', 'frame', g0); pos(frame, tx3 - u * 1.2, ty3 + TH + 26 - u * 1.0, TW * 1.04 + u * 2.4, MH * 1.04 + u * 2.0);
+  const bar = mk('div', 'bar', g0); pos(bar, tx3 - u * 2.6, ty3 + TH + 26, Math.max(6, u * 0.6), MH * 1.04);
+  const chip = mk('div', 'chip', g0, `#${i + 1} · Em alta`);
+  chip.style.fontSize = chipS + 'px'; chip.style.padding = `${chipS * 0.35}px ${chipS * 0.8}px`;
+  const big = mk('div', 'mask anton', g0); const bigT = mk('span', '', big, v.views);
+  const lab = mk('div', 'mask mono', g0); const labT = mk('span', '', lab, `visualizações · ${v.quando}`);
+  const idx = mk('div', 'abs mono', g0, `${String(i + 1).padStart(2, '0')} / 03`);
+  const rip = mk('div', 'ripple', g0);
+  // layout por formato
+  const bigS = fitText(bigT, P ? safe.w * 0.9 : rw3, { max: P ? 230 : 250 });
+  big.style.fontSize = bigS + 'px';
+  const labS = L.pick({ landscape: u * 2.3, portrait: u * 3 });
+  lab.style.fontSize = labS + 'px'; lab.style.color = '#C9C3B8'; idx.style.fontSize = labS + 'px'; idx.style.color = C.mute;
+  if (P) {
+    pos(chip, tx3, safe.y + chipS * 0.6);
+    const yb = ty3 + TH + 26 + MH * 1.04 + u * 4;
+    pos(big, tx3 - bigS * 0.02, yb, null, bigS * 1.16);
+    pos(lab, tx3, yb + bigS * 1.16 + u * 0.6, null, labS * 1.4);
+    pos(idx, tx3 + safe.w - labS * 4.4, safe.y + chipS * 0.85);
+  } else {
+    const colH = chipS * 3.2 + bigS * 1.16 + u * 0.6 + labS * 1.4;
+    const cy0 = ty3 + (TH + 26 + MH - colH) * 0.42;
+    pos(chip, rx3, cy0);
+    pos(big, rx3 - bigS * 0.02, cy0 + chipS * 3.2, null, bigS * 1.16);
+    pos(lab, rx3, cy0 + chipS * 3.2 + bigS * 1.16 + u * 0.6, null, labS * 1.4);
+    pos(idx, rx3, ty3 + TH + 26 + MH - labS * 1.2);
+  }
+  const bigChars = chars(bigT);
+  return { g0, th, im, meta, frame, bar, chip, big, bigChars, lab, labT, idx, rip, t0: 6 + 2 * i, click: v.click };
+});
+const camKF = [[0, 0], [7.82, -W], [9.82, -2 * W]];
+const clickPt = (i) => ({ x: tx3 + TW * CARDS[i].click[0], y: ty3 + TH * CARDS[i].click[1] });
+
+function drawS3(t) {
+  const cam = track(camKF, t, 'snappy');
+  const v = (cam - track(camKF, t - 1 / 120, 'snappy')) * 120;
+  rail.style.transform = `translateX(${cam}px)`;
+  const blur = Math.min(16, Math.abs(v) / 700);
+  rail.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
+  CARDS.forEach((K, i) => {
+    const t0 = K.t0, c = t0 + 1;
+    const rev = sp(t - (t0 - 0.12), 'default');
+    const ins = (1 - rev) * 50;
+    K.th.style.clipPath = `inset(${ins}% ${ins}% ${ins}% ${ins}% round ${u * 1.3}px)`;
+    const hl = sp(t - (c + 0.04), 'snappy');
+    const press = pulse(t, c);
+    K.th.style.transform = `scale(${1 - 0.035 * press})`;
+    K.im.style.transform = `scale(${1.14 - 0.1 * sp(t - (t0 - 0.12), { stiffness: 16, damping: 8 })})`;
+    K.im.style.filter = `brightness(${1 - 0.5 * hl})`;
+    // chip, número grande, legenda
+    const cp = sp(t - t0 - 0.08, 'snappy');
+    K.chip.style.transform = `scale(${0.6 + 0.4 * cp})`; K.chip.style.opacity = clamp(cp * 4);
+    rise(K.bigChars, t, t0 + 0.12, 0.035);
+    K.big.style.color = mixColor(C.paper, C.li, hl);
+    K.labT.style.display = 'inline-block';
+    K.labT.style.transform = `translateY(${(1 - sp(t - t0 - 0.32, 'snappy')) * 150}%)`;
+    K.idx.style.opacity = clamp(sp(t - t0 - 0.3, 'snappy') * 2) * 0.9;
+    // título real: sobe, e no clique cresce com moldura lima
+    const mp = sp(t - t0 - 0.02, 'snappy');
+    K.meta.style.transform = `translateY(${(1 - mp) * u * 4}px) scale(${1 + 0.04 * hl})`;
+    K.meta.style.clipPath = `inset(0 0 ${(1 - mp) * 100}% 0)`;
+    K.frame.style.clipPath = `inset(-4px ${(1 - hl) * 100}% -4px -4px)`;
+    K.bar.style.transform = `scaleY(${hl})`;
+    // onda do clique
+    const cpnt = { x: tx3 + TW * K.click[0], y: ty3 + TH * K.click[1] };
+    const rg = sp(t - c, 'default'), ro = 1 - sp(t - c - 0.05, 'heavy');
+    const R = rg * TW * 0.22;
+    pos(K.rip, cpnt.x - R, cpnt.y - R, R * 2, R * 2);
+    K.rip.style.opacity = t >= c ? ro : 0;
+  });
+}
+
+// ================================================================== S4 · O NÚMERO — 755.494 visualizações (painel real "Mais informações")
+const numS0 = P ? (() => { const pr = mk('span', 'anton', document.body, '755.494'); const v = fitText(pr, safe.w * 0.96, { max: 300 }); pr.remove(); return v; })() : 0;
+const PW = P ? safe.w * 0.8 : 700;
+const pad4 = PW * 0.07;
+const PIW = PW - pad4 * 2, PIH = PIW * 370 / 640;
+const PH = PIH + pad4 * 2;
+const panel = $('panel');
+$('panelImg').style.width = PIW + 'px';
+$('panelImg').style.marginLeft = pad4 + 'px'; $('panelImg').style.marginTop = pad4 + 'px';
+const px4 = safe.x, py4 = P ? safe.y + Math.max(u * 3, (safe.h - (PH + u * 7 + numS0 * 1.08 + numS0 * 0.46 + u * 3 + capSize * 1.4)) * 0.5) : H / 2 - PH / 2;
+pos(panel, px4, py4, PW, PH);
+const rowFrame = $('rowFrame');
+pos(rowFrame, pad4 - u * 1.2, pad4 + PIH * 0.665, PIW * 0.9 + u * 1.6, PIH * 0.33);
+const NUM = DATA.visualizacoes.split(' ')[0];            // "755.494"
+const numEl = $('num');
+const numMaxW = P ? safe.w : safe.x + safe.w - (px4 + PW + u * 8);
+const probe = mk('span', 'anton', numEl, NUM);
+const numS = fitText(probe, numMaxW * 0.96, { max: P ? 300 : 330 });
+const dW = measure('s4', () => { probe.textContent = '0'; let m = 0; for (const d of '0123456789') { probe.textContent = d; m = Math.max(m, probe.getBoundingClientRect().width); } probe.textContent = '.'; const dot = probe.getBoundingClientRect().width; return { m, dot }; });
+probe.remove();
+const nlh = numS * 1.08;
+const numW = [...NUM].reduce((s, ch) => s + (ch === '.' ? dW.dot : dW.m), 0);
+const nx4 = P ? safe.x : safe.x + safe.w - numW, ny4 = P ? py4 + PH + u * 7 : H / 2 - nlh * 0.78;
+pos(numEl, nx4, ny4, numW, nlh);
+const COLS = [];
+{
+  let x = 0, k = 0;
+  for (const ch of NUM) {
+    const w = ch === '.' ? dW.dot : dW.m;
+    const col = mk('div', 'col anton', numEl); pos(col, x, 0, w, nlh); col.style.fontSize = numS + 'px';
+    const strip = mk('div', 'strip', col);
+    if (ch === '.') { mk('div', '', strip, '.').style.height = nlh + 'px'; strip.style.lineHeight = nlh + 'px'; }
+    else {
+      const d = +ch, rolls = 1 + k, n = rolls * 10 + d;
+      for (let i = 0; i <= n; i++) { const e = mk('div', '', strip, String(i % 10)); e.style.height = nlh + 'px'; e.style.lineHeight = nlh + 'px'; }
+      COLS.push({ col, strip, n, land: 12.75 + k * 0.25 });
+      k++;
+    }
+    x += w;
+  }
+}
+const numLabel = $('numLabel');
+const nlS = L.pick({ landscape: numS * 0.42, portrait: numS * 0.46 });
+numLabel.style.fontSize = nlS + 'px'; numLabel.style.color = C.li; numLabel.style.letterSpacing = '.04em';
+pos(numLabel, nx4, ny4 + nlh + u * 0.6, null, nlS * 1.0);
+const nlChars = chars(numLabel.firstElementChild);
+const rule4 = $('rule4');
+pos(rule4, nx4, ny4 + nlh + u * 0.6 + nlS * 0.98, numW, Math.max(5, u * 0.6));
+const cap4 = $('cap4'); cap4.style.fontSize = capSize + 'px'; cap4.style.color = C.mute;
+pos(cap4, nx4, ny4 + nlh + u * 2.4 + nlS, null, capSize * 1.4);
+// fio lima: da linha "755.494 visualizações" até o contador
+const link = $('link'), linkP = link.firstElementChild;
+const la = { x: px4 + pad4 + PIW * 0.9 + u * 0.4, y: py4 + pad4 + PIH * 0.83 };
+const lb = P ? { x: nx4 + numW * 0.5, y: ny4 - u * 1.5 } : { x: nx4 - u * 2, y: ny4 + nlh * 0.5 };
+const linkD = P ? `M${la.x} ${la.y} C ${la.x + u * 6} ${la.y + u * 6}, ${lb.x} ${lb.y - u * 8}, ${lb.x} ${lb.y}` : `M${la.x} ${la.y} C ${la.x + u * 10} ${la.y}, ${lb.x - u * 10} ${lb.y}, ${lb.x} ${lb.y}`;
+linkP.setAttribute('d', linkD); linkP.setAttribute('stroke-width', Math.max(3, u * 0.35));
+const linkLen = measure('s4', () => linkP.getTotalLength());
+linkP.setAttribute('stroke-dasharray', linkLen);
+
+function drawS4(t) {
+  const t0 = 12;
+  const pp = sp(t - (t0 - 0.04), 'default');
+  panel.style.transform = `translateX(${(1 - pp) * -u * 14}px) skewY(${(1 - pp) * -10}deg) scaleX(${0.5 + 0.5 * pp})`;
+  panel.style.opacity = clamp(pp * 4);
+  const fr = sp(t - B.beat(25) + 0.08, 'snappy');
+  rowFrame.style.clipPath = `inset(-4px ${(1 - fr) * 100}% -4px -4px)`;
+  linkP.setAttribute('stroke-dashoffset', linkLen * (1 - sp(t - B.beat(25) - 0.1, 'snappy')));
+  const ni = sp(t - 12.2, 'heavy');
+  const punch = kick(t, 14, 'snappy') * 40;
+  numEl.style.transform = `scale(${1 + 0.05 * punch})`;
+  numEl.style.transformOrigin = '0 100%';
+  for (const K of COLS) {
+    const sT = K.land - 0.55;
+    const val = K.n * sp(t - sT, { stiffness: 300, damping: 36 });
+    const vel = (val - K.n * sp(t - 1 / 120 - sT, { stiffness: 300, damping: 36 })) * 120;
+    K.strip.style.transform = `translateY(${-val * nlh + (1 - ni) * nlh * 1.1}px)`;
+    // rastro de movimento vertical pintado (text-shadow), proporcional à velocidade do rolo
+    const col = mixColor(C.paper, C.li, inOut(t, K.land - 0.03, K.land + 0.1, 'snappy'));
+    const smear = Math.min(nlh * 0.22, Math.abs(vel) * nlh / 90);
+    K.col.style.color = col;
+    K.strip.style.textShadow = smear > 1 ? [1, 2, 3].map((k) => { const a = (0.32 / k).toFixed(3), c = col.replace(/,[\d.]+\)$/, `,${a})`); return `0 ${(-smear * k / 3).toFixed(1)}px 0 ${c}, 0 ${(smear * k / 3).toFixed(1)}px 0 ${c}`; }).join(',') : 'none';
+  }
+  rise(nlChars, t, B.beat(28) - 0.02, 0.025);
+  rule4.style.transform = `scaleX(${sp(t - B.beat(28) - 0.1, 'snappy')})`;
+  cap4.firstElementChild.style.transform = `translateY(${(1 - sp(t - B.beat(29), 'snappy')) * 150}%)`;
+  const push = 1 + 0.035 * sp(t - t0, { stiffness: 8, damping: 5.7 });
+  $('s4in').style.transform = `translate(${shake(t, 14, u * 0.4)}px,0) scale(${push})`;
+}
+
+// ================================================================== S5 · ASSINATURA
+const D5 = P ? 400 : 400;
+const n1 = $('n1'), n2 = $('n2');
+const nS = fitText($('n2t'), P ? safe.w * 0.86 : 760, { max: P ? 300 : 280 });
+n1.style.fontSize = n2.style.fontSize = nS + 'px';
+const nLH = nS * 0.9;
+const urlS = L.pick({ landscape: u * 2.9, portrait: u * 3.5 });
+const url = $('url'); url.style.fontSize = urlS + 'px'; url.style.color = C.li; url.style.textTransform = 'none'; url.style.letterSpacing = '.01em';
+const btnH = P ? 124 : 116, btnW = btnH * 330 / 123;
+const bellH = btnH * 0.95, bellW = bellH * 74 / 84;
+const cap5 = $('cap5'); cap5.style.fontSize = capSize + 'px'; cap5.style.color = C.paper;
+const [n1w, n2w, urlW, cap5W] = measure('s5', () => [$('n1t').getBoundingClientRect().width, $('n2t').getBoundingClientRect().width, url.firstElementChild.getBoundingClientRect().width, cap5.firstElementChild.getBoundingClientRect().width]);
+let ax5, ay5, colX, stackTop;
+const gap = u * 2.2;
+const stackH = nLH * 2 + gap + urlS * 1.3 + gap * 1.4 + btnH + gap + capSize * 1.4;
+if (P) {
+  const total = D5 + gap * 1.6 + stackH;
+  ay5 = safe.y + (safe.h - total) * 0.5; ax5 = W / 2 - D5 / 2;
+  stackTop = ay5 + D5 + gap * 1.6;
+} else {
+  const colW = Math.max(n1w, n2w, urlW, btnW + u * 2 + bellW, cap5W);
+  ax5 = W / 2 - (D5 + u * 8 + colW) / 2; ay5 = H / 2 - D5 / 2;
+  colX = ax5 + D5 + u * 8;
+  stackTop = H / 2 - stackH / 2;
+}
+const cxOf = (w) => (P ? W / 2 - w / 2 : colX);
+pos($('sigAv'), ax5, ay5, D5, D5);
+pos($('sigGlow'), ax5 - D5 * 0.5, ay5 - D5 * 0.5, D5 * 2, D5 * 2);
+const sigRing = $('sigRing'), rp5 = D5 * 0.06;
+pos(sigRing, ax5 - rp5, ay5 - rp5, D5 + rp5 * 2, D5 + rp5 * 2);
+const ringR5 = D5 / 2 + rp5 * 0.55, circ5 = 2 * Math.PI * ringR5;
+{ const c = sigRing.firstElementChild; c.setAttribute('cx', D5 / 2 + rp5); c.setAttribute('cy', D5 / 2 + rp5); c.setAttribute('r', ringR5); c.setAttribute('stroke-width', Math.max(5, D5 * 0.02)); c.setAttribute('stroke-dasharray', circ5); c.setAttribute('transform', `rotate(-90 ${D5 / 2 + rp5} ${D5 / 2 + rp5})`); }
+let yy = stackTop;
+pos(n1, cxOf(n1w) - nS * 0.01, yy - nS * 0.06, null, nS * 0.98); yy += nLH;
+pos(n2, cxOf(n2w) - nS * 0.01, yy - nS * 0.06, null, nS * 0.98); yy += nLH + gap;
+pos(url, cxOf(urlW), yy, null, urlS * 1.3); yy += urlS * 1.3 + gap * 1.4;
+const rowW = btnW + u * 2 + bellW;
+const bx5 = cxOf(rowW), by5 = yy;
+pos($('subBtn'), bx5, by5, btnW, btnH);
+pos($('bell'), bx5 + btnW + u * 2, by5 + (btnH - bellH) / 2, bellW, bellH);
+$('bell').style.transformOrigin = '50% 12%';
+yy += btnH + gap;
+pos(cap5, cxOf(cap5W), yy, null, capSize * 1.4);
+const n1c = chars($('n1t')), n2c = chars($('n2t'));
+const btnC = { x: bx5 + btnW / 2, y: by5 + btnH / 2 };
+const RINGS = [0, 1].map(() => mk('div', 'ripple', $('rings5')));
+const SPARKS = [];
+{
+  const r = rng(77);
+  for (let i = 0; i < 18; i++) {
+    const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    sv.setAttribute('viewBox', '-10 -10 20 20'); sv.setAttribute('class', 'spark');
+    sv.innerHTML = '<path d="M0 -10 L2.2 -2.2 L10 0 L2.2 2.2 L0 10 L-2.2 2.2 L-10 0 L-2.2 -2.2 Z"/>';
+    sv.firstElementChild.setAttribute('fill', i % 2 ? C.liH : '#FF8A1F');
+    $('sparks').appendChild(sv);
+    const a = (i / 18) * Math.PI * 2 + r() * 0.3;
+    SPARKS.push({ sv, a, d: btnW * (0.7 + r() * 0.9), s: u * (1.6 + r() * 1.8), rot: r() * 180, dl: r() * 0.06 });
+  }
+}
+const CLICK5 = B.beat(36);
+
+function drawS5(t) {
+  const t0 = 16;
+  const ap = sp(t - (t0 - 0.02), 'heavy');
+  $('sigAv').style.clipPath = `circle(${ap * 50}% at 50% 50%)`;
+  $('sigAvImg').style.transform = `scale(${1.25 - 0.25 * ap})`;
+  const rg = sp(t - t0 - 0.18, 'snappy');
+  sigRing.firstElementChild.setAttribute('stroke-dashoffset', circ5 * (1 - rg));
+  $('sigGlow').style.opacity = rg * 0.85 + 0.25 * pulse(t, CLICK5, 0.02, 0.2);
+  rise(n1c, t, t0 + 0.2, 0.032);
+  rise(n2c, t, t0 + 0.42, 0.032);
+  wipeIn(url, sp(t - t0 - 0.72, 'snappy'));
+  const bp = sp(t - B.beat(34), 'snappy');
+  const press = pulse(t, CLICK5, 0.06, 0.07);
+  $('subBtn').style.transform = `scale(${(0.7 + 0.3 * bp) * (1 - 0.1 * press)})`;
+  $('subBtn').style.opacity = clamp(bp * 5);
+  $('subBtn').style.filter = `brightness(${1 + 0.25 * press})`;
+  const bl = sp(t - B.beat(34) - 0.1, 'snappy');
+  const swing = (kick(t, CLICK5 + 0.04, 'playful') + 0.35 * kick(t, CLICK5 + 0.5, 'playful')) * 600;
+  $('bell').style.transform = `scale(${bl}) rotate(${swing}deg)`;
+  RINGS.forEach((R, k) => {
+    const c = CLICK5 + k * 0.1;
+    const g1 = sp(t - c, 'default'), fade = 1 - sp(t - c - 0.1, 'heavy');
+    const rx = btnW * (0.5 + g1 * (1.1 + k * 0.7)), ry = btnH * 0.5 + g1 * btnW * (1.1 + k * 0.7) * 0.6;
+    pos(R, btnC.x - rx, btnC.y - ry, rx * 2, ry * 2);
+    R.style.opacity = t >= c ? fade : 0;
+    R.style.borderWidth = Math.max(2, u * 0.4 * (1 - g1 * 0.6)) + 'px';
+  });
+  for (const S of SPARKS) {
+    const p = sp(t - CLICK5 - S.dl, 'default'), out = 1 - sp(t - CLICK5 - 0.22 - S.dl, 'heavy');
+    const vis = t >= CLICK5 + S.dl ? clamp(out) : 0;
+    const x = btnC.x + Math.cos(S.a) * S.d * p, y = btnC.y + Math.sin(S.a) * S.d * p * 0.75;
+    const s = S.s * vis * (0.4 + 0.6 * p);
+    pos(S.sv, x - s, y - s, s * 2, s * 2);
+    S.sv.style.transform = `rotate(${S.rot * p}deg)`;
+    S.sv.style.display = vis > 0.01 ? 'block' : 'none';
+  }
+  cap5.firstElementChild.style.transform = `translateY(${(1 - sp(t - CLICK5 - 0.45, 'snappy')) * 150}%)`;
+  const push = 1 + 0.03 * sp(t - t0, { stiffness: 8, damping: 5.7 });
+  $('s5in').style.transform = `translate(${shake(t, CLICK5, u * 0.7)}px, ${shake(t, CLICK5 + 0.015, u * 0.5)}px) scale(${push})`;
+}
+
+// ------------------------------------------------------------------ cursor: trajetórias (coordenadas de tela)
+const off = { x: W + 80, y: H * 1.05 };
+const curKF = [[0, off]];
+for (let i = 0; i < 3; i++) {
+  const c = 7 + 2 * i, p = clickPt(i);
+  curKF.push([c - 0.72, { x: p.x + W * 0.1, y: p.y + H * 0.14 }], [c - 0.36, p], [c + 0.3, { x: p.x + W * 0.07, y: p.y - H * 0.1 }]);
+}
+curKF.push([11.6, { x: W + 120, y: H * 0.25 }], [16.8, off], [17.25, { x: btnC.x + btnW * 0.9, y: btnC.y + btnH * 1.6 }], [17.62, { x: btnC.x - btnW * 0.08, y: btnC.y + btnH * 0.05 }], [18.45, { x: btnC.x + btnW * 0.35, y: btnC.y + btnH * 1.1 }], [19.0, { x: W + 120, y: H * 1.1 }]);
+function drawCursor(t) {
+  const on = (t > 6.3 && t < 12) || (t > 16.9);
+  cursor.style.display = on ? 'block' : 'none';
+  if (!on) return;
+  const p = track(curKF, t, 'snappy');
+  let pr = 0; for (const c of [7, 9, 11, CLICK5]) pr += pulse(t, c, 0.06, 0.06);
+  cursor.style.transform = `translate(${p.x - 4 * cs}px, ${p.y - 4 * cs}px) scale(${1 - 0.18 * pr})`;
+}
+
+// ------------------------------------------------------------------ seek(t): desenha o frame EXATO
+const SECTIONS = ['s1', 's2', 's3', 's4', 's5'].map($);
+function seek(t) {
+  const { index } = sceneAt(SCENES, t);
+  const sec = SEC[index];
+  SECTIONS.forEach((e) => (e.style.display = e.id === sec ? 'block' : 'none'));
+  drawBg(t);
+  $('hTR').textContent = `${String(STORY[index] + 1).padStart(2, '0')}/05 · ${STORY_NAMES[STORY[index]]}`;
+  $('hBL').textContent = tc(t);
+  $('hBR').querySelector('.dot').style.transform = `scale(${0.6 + 0.6 * B.pulse(t, 7)})`;
+  const gf = Math.floor(t * 24);
+  $('grain').style.backgroundPosition = `${Math.floor(hash(gf) * 256)}px ${Math.floor(hash(gf + 99) * 256)}px`;
+  if (sec === 's1') drawS1(t);
+  else if (sec === 's2') drawS2(t);
+  else if (sec === 's3') drawS3(t);
+  else if (sec === 's4') drawS4(t);
+  else drawS5(t);
+  drawCursor(t);
+  drawWipe(t);
+}
+window.READY = Promise.all([...document.images].map((im) => (im.complete ? im.decode().catch(() => {}) : new Promise((r) => { im.onload = im.onerror = r; }))));
+window.seek = seek;
+seek(0);
+</script>
+</body>
+</html>

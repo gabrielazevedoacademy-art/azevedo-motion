@@ -4,7 +4,7 @@ import { resolveChromium } from '../../engine/bin.mjs';
 const OUT = new URL('./screens/', import.meta.url).pathname;
 const c = await resolveChromium();
 const browser = await chromium.launch({ executablePath: c.executablePath, args: c.args, headless: true, proxy: { server: process.env.HTTPS_PROXY } });
-const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 2, locale: 'pt-BR' });
+const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 3, locale: 'pt-BR' });
 await ctx.addCookies([{ name: 'PREF', value: 'f6=400&hl=pt&gl=BR', domain: '.youtube.com', path: '/' }]);
 const page = await ctx.newPage();
 await page.goto('https://www.youtube.com/@Azevedo.Academy/videos', { waitUntil: 'domcontentloaded' });

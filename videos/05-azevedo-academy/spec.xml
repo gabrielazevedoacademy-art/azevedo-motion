@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Spec do vídeo 05-azevedo-academy. Grade: 120 BPM → 1 batida = 0,5 s · 1 compasso = 2 s · 20 s = 40 batidas.
+  Todo material visual é REAL (assets/azevedo-academy/): foto, banner, miniaturas, recortes da interface do YouTube.
+-->
+<spec nome="05-azevedo-academy" versao="1">
+
+  <entradas>
+    <pedido>Showreel de 20 s para o canal Azevedo Academy (youtube.com/@Azevedo.Academy), energia de motion designer</pedido>
+    <duracao>20</duracao>
+    <formatos>16:9 (principal), 9:16 (mesma linha do tempo)</formatos>
+    <fps>60</fps>
+    <bpm>120</bpm>
+    <referencias>assets/azevedo-academy/banner_strip.jpg, screens/*, thumbs/*</referencias>
+    <marca>assets/azevedo-academy/ (channel.json, colors.json)</marca>
+    <audio estilo="energetico">sintetizado em audio.mjs (lib/audio.mjs), cliques/whooshes nos cortes, clique forte no Inscrever-se</audio>
+  </entradas>
+
+  <direcao>
+    <ideia>"Simplificar o complexo" (frase da descrição do canal): o caos vira ordem no gancho, e o resto do filme é a prova — o canal se monta, os 3 vídeos mais vistos, o número real, a assinatura.</ideia>
+    <paleta>#0E0C09 fundo · #15120C fundo 2 · #F97102 laranja · #BBE000 lima · #DEED1E lima brilho · #F4F1EA papel (tudo amostrado do banner)</paleta>
+    <tipografia>Anton (tipografia cinética e números, eco das miniaturas) · Bebas Neue (assinatura, eco do banner) · JetBrains Mono (HUD/legendas) · interface real do YouTube (Roboto) só via recortes</tipografia>
+    <movimento>tipografia/logo/avatar: heavy (sem overshoot) · cards, câmera, peças do banner: default · UI, cursor, chips, botão: snappy · sino: playful (objeto, não texto)</movimento>
+    <camera>trilho horizontal com chicote entre os 3 vídeos (track snappy + desfoque proporcional à velocidade); push-in lento em cada cena</camera>
+    <textura>riscos diagonais de luz laranja (esq.) e lima (dir.) + estrelinhas de 4 pontas, como no banner; grão de filme 24 qps</textura>
+    <reenquadre>
+      <formato id="16:9">texto à esquerda; vídeo: miniatura à esquerda + número grande à direita; número: painel real à esquerda + contador à direita; assinatura: avatar à esquerda, nome à direita</formato>
+      <formato id="9:16">tudo empilhado na área segura (topo 11%, base 20% livres para a interface de Shorts/Reels); assinatura centralizada (sem gradiente)</formato>
+    </reenquadre>
+  </direcao>
+
+  <estados>
+    <!-- 1. GANCHO 0–3 s -->
+    <estado t="0.0"  cena="gancho" evento="impact">letras de COMPLEXO espalhadas pelo quadro em contorno lima, girando, ligadas por linhas emaranhadas (o frame 0 já está em movimento)</estado>
+    <estado t="0.5"  evento="click">SIMPLIFICAR sobe letra a letra por máscara (heavy)</estado>
+    <estado t="1.0"  evento="hit">COMPLEXO se encaixa na linha: preenchimento laranja, linhas somem; "O" sobe</estado>
+    <estado t="1.5"  evento="click">régua lima + legenda "INTELIGÊNCIA ARTIFICIAL · DESIGN · TECNOLOGIA" (palavras da descrição)</estado>
+    <estado t="2.0">push-in lento do bloco</estado>
+    <estado t="3.0"  evento="whoosh+hit">cortina diagonal laranja/lima cobre o corte</estado>
+    <!-- 2. O CANAL 3–6 s -->
+    <estado t="3.0"  cena="o canal">banner real dividido em 16 peças voa em 3D e se monta (default, ordem aleatória com semente)</estado>
+    <estado t="3.75">foto de perfil chega em 4 quadrantes de 4 direções (heavy)</estado>
+    <estado t="4.5"  evento="impact">foto travada; anel laranja se desenha; recorte real "Azevedo - Academy · @Azevedo.Academy · 22,7 mil inscritos · 67 vídeos" abre por máscara</estado>
+    <estado t="5.0"  evento="whoosh">brilho lima varre o banner</estado>
+    <estado t="6.0"  evento="whoosh+hit">cortina → vídeos</estado>
+    <!-- 3. TRÊS VÍDEOS REAIS 6–12 s (aba Vídeos → Em alta) -->
+    <estado t="6.0"  cena="vídeo 1">miniatura de "Criei um Filme Realista…" abre do centro; chip "#1 · EM ALTA"; "268 MIL" sobe</estado>
+    <estado t="7.0"  evento="click">cursor clica na miniatura (pressão + onda lima); título real ganha moldura lima e cresce; miniatura escurece</estado>
+    <estado t="8.0"  cena="vídeo 2" evento="whoosh">chicote de câmera → "Como Criar uma Influenciadora…" · 174 MIL</estado>
+    <estado t="9.0"  evento="click">clique + título em destaque</estado>
+    <estado t="10.0" cena="vídeo 3" evento="whoosh">chicote → "Tenha sua Própria IA no PC…" · 36 MIL</estado>
+    <estado t="11.0" evento="click">clique + título em destaque</estado>
+    <!-- 4. O NÚMERO 12–16 s -->
+    <estado t="12.0" cena="o número" evento="hit">painel real "Mais informações" (inscritos, vídeos, visualizações) entra girando</estado>
+    <estado t="12.5">linha "755.494 visualizações" ganha moldura lima; fio lima liga a linha ao contador</estado>
+    <estado t="12.75" evento="click×6">contador em rolos: cada dígito trava numa semicolcheia (12.75 → 14.0)</estado>
+    <estado t="14.0" evento="drop+impact">755.494 travado; "VISUALIZAÇÕES" bate; régua lima</estado>
+    <estado t="16.0" evento="whoosh+hit">cortina → assinatura</estado>
+    <!-- 5. ASSINATURA 16–20 s -->
+    <estado t="16.0" cena="assinatura">foto de perfil abre em círculo (heavy) com anel laranja e brilho</estado>
+    <estado t="16.25">AZEVEDO / ACADEMY sobem por letra (Bebas Neue, heavy)</estado>
+    <estado t="16.75">youtube.com/@Azevedo.Academy abre por máscara (lima)</estado>
+    <estado t="17.0">botão real "Inscrever-se" aparece (snappy); cursor entra</estado>
+    <estado t="18.0" evento="click forte + hit">clique: botão afunda, ondas lima, estrelas laranja/lima explodem, tremor curto, sino real do banner balança</estado>
+    <estado t="20.0">tudo assentado; último quadro limpo (pôster em 19.6 s)</estado>
+  </estados>
+
+  <regras>
+    <regra>seek(t) puro: nada de relógio, rAF, setTimeout, animação CSS ou Math.random sem semente.</regra>
+    <regra>Nenhum título, número ou interface inventado: só channel.json e recortes de screens/; o contador termina no valor real.</regra>
+    <regra>Toda mudança via spring/track/inOut de lib/motion.js; tipografia sem overshoot.</regra>
+    <regra>Cortes e cliques em batidas (beats(120, 20)).</regra>
+    <regra>Layout via lib/layout.js; 9:16 dentro da área segura.</regra>
+  </regras>
+
+  <cuidados>
+    <cuidado>Recortes da interface têm fundo #0F0F0F/#212121: emoldurar em painel da mesma cor para não parecer colado.</cuidado>
+    <cuidado>Miniaturas são 1280×720: não ampliar acima de ~1,1× no 16:9.</cuidado>
+    <cuidado>Cursor não pode cobrir o título destacado.</cuidado>
+    <cuidado>Cortina tem que cobrir o quadro inteiro no instante exato do corte (conferir em t = corte ± 1 frame).</cuidado>
+  </cuidados>
+
+</spec>

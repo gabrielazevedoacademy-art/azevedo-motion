@@ -1,0 +1,358 @@
+{
+ "source": "sintetizado",
+ "style": "energetico",
+ "bpm": 120,
+ "spb": 0.5,
+ "offset": 0,
+ "beatsPerBar": 4,
+ "duration": 20,
+ "beats": [
+  0,
+  0.5,
+  1,
+  1.5,
+  2,
+  2.5,
+  3,
+  3.5,
+  4,
+  4.5,
+  5,
+  5.5,
+  6,
+  6.5,
+  7,
+  7.5,
+  8,
+  8.5,
+  9,
+  9.5,
+  10,
+  10.5,
+  11,
+  11.5,
+  12,
+  12.5,
+  13,
+  13.5,
+  14,
+  14.5,
+  15,
+  15.5,
+  16,
+  16.5,
+  17,
+  17.5,
+  18,
+  18.5,
+  19,
+  19.5,
+  20
+ ],
+ "bars": [
+  0,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20
+ ],
+ "halfBars": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+ ],
+ "strong": [
+  0,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20
+ ],
+ "events": [
+  {
+   "t": 0,
+   "type": "impact",
+   "gain": 0.9
+  },
+  {
+   "t": 0.5,
+   "type": "click",
+   "gain": 0.45,
+   "pitch": 1.2
+  },
+  {
+   "t": 1,
+   "type": "riser",
+   "dur": 1,
+   "gain": 0.5
+  },
+  {
+   "t": 1,
+   "type": "hit",
+   "gain": 0.9
+  },
+  {
+   "t": 1.5,
+   "type": "click",
+   "gain": 0.5
+  },
+  {
+   "t": 2.98,
+   "type": "whoosh",
+   "dur": 0.5
+  },
+  {
+   "t": 3,
+   "type": "hit",
+   "gain": 0.8
+  },
+  {
+   "t": 3.18,
+   "type": "click",
+   "gain": 0.3,
+   "pitch": 1.5
+  },
+  {
+   "t": 3.36,
+   "type": "click",
+   "gain": 0.3,
+   "pitch": 1.3
+  },
+  {
+   "t": 3.5,
+   "type": "click",
+   "gain": 0.35,
+   "pitch": 1.1
+  },
+  {
+   "t": 3.75,
+   "type": "click",
+   "gain": 0.3,
+   "pitch": 0.9
+  },
+  {
+   "t": 4,
+   "type": "whoosh",
+   "dur": 0.35,
+   "gain": 0.35
+  },
+  {
+   "t": 4.5,
+   "type": "impact",
+   "gain": 0.55
+  },
+  {
+   "t": 4.5,
+   "type": "click",
+   "gain": 0.6,
+   "pitch": 0.8
+  },
+  {
+   "t": 5,
+   "type": "whoosh",
+   "dur": 0.6,
+   "gain": 0.45
+  },
+  {
+   "t": 5.98,
+   "type": "whoosh",
+   "dur": 0.5
+  },
+  {
+   "t": 6,
+   "type": "hit",
+   "gain": 0.8
+  },
+  {
+   "t": 7,
+   "type": "click",
+   "gain": 1.1
+  },
+  {
+   "t": 8,
+   "type": "whoosh",
+   "dur": 0.45,
+   "gain": 0.8
+  },
+  {
+   "t": 8,
+   "type": "kick",
+   "gain": 0.6
+  },
+  {
+   "t": 9,
+   "type": "click",
+   "gain": 1.1
+  },
+  {
+   "t": 10,
+   "type": "whoosh",
+   "dur": 0.45,
+   "gain": 0.8
+  },
+  {
+   "t": 10,
+   "type": "kick",
+   "gain": 0.6
+  },
+  {
+   "t": 11,
+   "type": "click",
+   "gain": 1.1
+  },
+  {
+   "t": 11.98,
+   "type": "whoosh",
+   "dur": 0.5
+  },
+  {
+   "t": 12,
+   "type": "hit",
+   "gain": 0.8
+  },
+  {
+   "t": 12.5,
+   "type": "click",
+   "gain": 0.5,
+   "pitch": 1.4
+  },
+  {
+   "t": 12.75,
+   "type": "click",
+   "gain": 0.55,
+   "pitch": 0.9
+  },
+  {
+   "t": 13,
+   "type": "click",
+   "gain": 0.6100000000000001,
+   "pitch": 0.98
+  },
+  {
+   "t": 13.25,
+   "type": "click",
+   "gain": 0.67,
+   "pitch": 1.06
+  },
+  {
+   "t": 13.5,
+   "type": "click",
+   "gain": 0.73,
+   "pitch": 1.1400000000000001
+  },
+  {
+   "t": 13.75,
+   "type": "click",
+   "gain": 0.79,
+   "pitch": 1.22
+  },
+  {
+   "t": 14,
+   "type": "click",
+   "gain": 0.8500000000000001,
+   "pitch": 1.3
+  },
+  {
+   "t": 14,
+   "type": "riser",
+   "dur": 1.25,
+   "gain": 0.6
+  },
+  {
+   "t": 14,
+   "type": "drop",
+   "gain": 0.9
+  },
+  {
+   "t": 14,
+   "type": "impact",
+   "gain": 0.7
+  },
+  {
+   "t": 15.98,
+   "type": "whoosh",
+   "dur": 0.5
+  },
+  {
+   "t": 16,
+   "type": "hit",
+   "gain": 0.9
+  },
+  {
+   "t": 17,
+   "type": "whoosh",
+   "dur": 0.4,
+   "gain": 0.3
+  },
+  {
+   "t": 17.6,
+   "type": "riser",
+   "dur": 0.4,
+   "gain": 0.35
+  },
+  {
+   "t": 18,
+   "type": "click",
+   "gain": 2.4,
+   "pitch": 0.75
+  },
+  {
+   "t": 18,
+   "type": "click",
+   "gain": 1.6,
+   "pitch": 1.35
+  },
+  {
+   "t": 18,
+   "type": "hit",
+   "gain": 1
+  },
+  {
+   "t": 18,
+   "type": "impact",
+   "gain": 0.6
+  },
+  {
+   "t": 18.12,
+   "type": "click",
+   "gain": 0.4,
+   "pitch": 1.8
+  },
+  {
+   "t": 18.24,
+   "type": "click",
+   "gain": 0.3,
+   "pitch": 2.1
+  }
+ ]
+}
