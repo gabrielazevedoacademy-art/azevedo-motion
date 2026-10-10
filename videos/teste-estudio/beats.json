@@ -1,0 +1,139 @@
+{
+ "source": "sintetizado",
+ "style": "energetico",
+ "bpm": 120,
+ "spb": 0.5,
+ "offset": 0,
+ "beatsPerBar": 4,
+ "duration": 8,
+ "beats": [
+  0,
+  0.5,
+  1,
+  1.5,
+  2,
+  2.5,
+  3,
+  3.5,
+  4,
+  4.5,
+  5,
+  5.5,
+  6,
+  6.5,
+  7,
+  7.5,
+  8
+ ],
+ "bars": [
+  0,
+  2,
+  4,
+  6,
+  8
+ ],
+ "halfBars": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8
+ ],
+ "strong": [
+  0,
+  2,
+  4,
+  6,
+  8
+ ],
+ "events": [
+  {
+   "t": 0,
+   "type": "impact",
+   "gain": 0.8
+  },
+  {
+   "t": 0.5,
+   "type": "click",
+   "gain": 0.5
+  },
+  {
+   "t": 1,
+   "type": "click",
+   "gain": 0.5
+  },
+  {
+   "t": 2,
+   "type": "riser",
+   "dur": 0.5,
+   "gain": 0.8
+  },
+  {
+   "t": 2,
+   "type": "hit"
+  },
+  {
+   "t": 2.5,
+   "type": "click"
+  },
+  {
+   "t": 3,
+   "type": "click"
+  },
+  {
+   "t": 3.5,
+   "type": "click"
+  },
+  {
+   "t": 3.98,
+   "type": "whoosh",
+   "dur": 0.5
+  },
+  {
+   "t": 4,
+   "type": "hit",
+   "gain": 0.8
+  },
+  {
+   "t": 4.5,
+   "type": "whoosh",
+   "dur": 0.4,
+   "gain": 0.4
+  },
+  {
+   "t": 5,
+   "type": "whoosh",
+   "dur": 0.4,
+   "gain": 0.4
+  },
+  {
+   "t": 5.5,
+   "type": "whoosh",
+   "dur": 0.4,
+   "gain": 0.5
+  },
+  {
+   "t": 6,
+   "type": "riser",
+   "dur": 1,
+   "gain": 0.7
+  },
+  {
+   "t": 6,
+   "type": "impact"
+  },
+  {
+   "t": 7,
+   "type": "drop"
+  },
+  {
+   "t": 7,
+   "type": "hit",
+   "gain": 0.7
+  }
+ ]
+}

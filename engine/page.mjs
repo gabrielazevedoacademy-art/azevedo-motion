@@ -20,6 +20,7 @@ export function startServer() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
       const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+      if (url === '/favicon.ico') { res.writeHead(204); res.end(); return; }
       const file = path.join(ROOT, path.normalize(url));
       if (!file.startsWith(ROOT) || !existsSync(file) || statSync(file).isDirectory()) {
         res.writeHead(404); res.end('404'); return;
@@ -85,13 +86,14 @@ export async function seekTo(page, t) {
   await page.evaluate(async (tt) => { await window.seek(tt); }, t);
 }
 
+const BOOL_FLAGS = new Set(['preview', 'png']);
 export function parseArgs(argv) {
   const out = { _: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith('--')) {
       const k = a.slice(2);
-      const v = argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : true;
+      const v = !BOOL_FLAGS.has(k) && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : true;
       out[k] = v;
     } else out._.push(a);
   }
