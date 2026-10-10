@@ -47,5 +47,13 @@ Cortes 3 / 6 / 12 / 16 s cobertos por cortina diagonal (escuro · laranja · lim
 
 Determinismo: `npm run check` ✓ em 16:9 e 9:16 (16 amostras cada).
 
-## Pendências
-- Render final 60 fps (16:9 e 9:16) aguardando aprovação da folha de contato.
+## Entrega
+| arquivo | |
+|---|---|
+| `out/final_16x9.mp4` | 1920×1080 · 60 fps · H.264 yuv420p + AAC 48 kHz · 20,0 s · 29 MB |
+| `out/final_9x16.mp4` | 1080×1920 · 60 fps · H.264 yuv420p + AAC 48 kHz · 20,0 s · 27 MB |
+| `poster.png` / `poster_9x16.png` | quadro t = 19,6 s (assinatura) |
+| `contact_sheet.png` | um quadro por batida da história, 16:9 e 9:16 (aprovada pelo usuário antes do render) |
+
+Render: `npm run render -- videos/05-azevedo-academy --fps 60 --format 16:9` e `--format 9:16`.
+Para recapturar o canal: `node assets/azevedo-academy/capture.mjs --dark`, `capture_about.mjs`, `capture_cards.mjs`, `capture_hires.mjs` (os números mudam com o tempo — o vídeo usa os de 2026-10-10).
