@@ -1,0 +1,13 @@
+{
+  "fonte": "amostrado com PIL de banner_strip.jpg (anel do play, brilhos laterais, sino) e avatar_900.jpg",
+  "fundo": "#15120C",
+  "laranja": "#F97102",
+  "laranja_sino": "#FB6200",
+  "laranja_escuro": "#C64906",
+  "laranja_avatar": "#E55F20",
+  "lima": "#BBE000",
+  "lima_brilho": "#DEED1E",
+  "branco_texto": "#F4F1EA",
+  "yt_dark_bg": "#0F0F0F",
+  "yt_dark_panel": "#212121"
+}
