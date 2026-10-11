@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>07 · abertura curso Influencer com IA</title>
+<link rel="stylesheet" href="/node_modules/@fontsource/instrument-serif/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/instrument-serif/400-italic.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/400.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/500.css">
+<link rel="stylesheet" href="/node_modules/@fontsource/inter/600.css">
+<style>
+  :root { --paper:#F2EDE4; --paper2:#E4DDD1; --ink:#161412; --wine:#7B2431; --graph:#8B847A; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { width:var(--W); height:var(--H); overflow:hidden; background:var(--paper); }
+  body { font-family:Inter, sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision; }
+  .serif { font-family:'Instrument Serif', serif; font-weight:400; }
+  .label { font-family:Inter, sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.16em; white-space:nowrap; }
+  .abs { position:absolute; }
+
+  #paper { position:absolute; inset:0; background:var(--paper); }
+  #paperTex { position:absolute; inset:0; mix-blend-mode:multiply; opacity:.9; }
+  #cam { position:absolute; inset:0; transform-origin:50% 50%; }
+  #grid { position:absolute; inset:0; }
+  #grid .col { position:absolute; width:1px; background:rgba(22,20,18,.085); transform-origin:top; }
+  #grid .rule { position:absolute; height:1px; background:rgba(22,20,18,.55); transform-origin:left; }
+  .crop { position:absolute; width:22px; height:22px; border-color:rgba(22,20,18,.45); border-style:solid; border-width:0; }
+
+  #chrome .label { position:absolute; color:var(--ink); }
+  #chrome .folio { position:absolute; font-family:'Instrument Serif'; line-height:1; }
+
+  .scene { position:absolute; inset:0; display:none; }
+  .mask { position:absolute; overflow:hidden; }
+  .ch { display:inline-block; will-change:transform; }
+
+  /* S3 estratégia */
+  #s3 .big { position:absolute; white-space:nowrap; line-height:1; color:var(--ink); }
+  #s3 .lead { position:absolute; white-space:nowrap; font-style:italic; color:var(--ink); line-height:1; }
+  #s3 .lead span { display:inline-block; }
+  #s3 .sup { position:absolute; color:var(--wine); line-height:1; }
+  #s3 .wrule { position:absolute; background:var(--wine); transform-origin:left; }
+  #s3 .note { position:absolute; color:#4a453f; font-weight:400; line-height:1.45; }
+  #s3 .note b { color:var(--wine); font-weight:600; }
+
+  /* legendas */
+  #caps { position:absolute; left:0; right:0; text-align:center; font-weight:500; line-height:1.3; z-index:20; }
+  #caps .line { display:inline-block; padding:.18em .55em .22em; }
+  #caps .w { display:inline-block; }
+
+  #grain { position:absolute; inset:-128px; z-index:30; opacity:.055; mix-blend-mode:multiply; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="paper"><canvas id="paperTex"></canvas></div>
+<div id="cam">
+  <div id="grid"></div>
+  <div id="chrome"></div>
+
+  <section class="scene" id="s3">
+    <div class="label abs" id="s3label" style="color:var(--wine)">Editorial — Estratégia</div>
+    <div class="serif lead" id="s3lead"></div>
+    <div id="s3words"></div>
+    <div class="serif sup" id="s3sup">¹</div>
+    <div class="wrule" id="s3rule"></div>
+    <div class="note" id="s3note"><b>¹</b> es·tra·té·gi·a, <i>s.f.</i> — escolher o que mostrar,<br>para quem e por quê.</div>
+  </section>
+</div>
+<div id="caps"></div>
+<div id="grain"></div>
+
+<script type="module">
+import { spring, springProgress, track, inOut, clamp, lerp, rng, hash, noise, set, beats } from '/lib/motion.js';
+import { createLayout, applyRoot, fitText } from '/lib/layout.js';
+import { WORDS, SENTENCES } from './tempos.js';
+
+await Promise.all([
+  '400 100px "Instrument Serif"', 'italic 400 100px "Instrument Serif"',
+  '400 20px Inter', '500 20px Inter', '600 20px Inter',
+].map((f) => document.fonts.load(f, 'ESTRATÉGIAÇÃÕ é¹—·Nº0123')));
+
+const L = applyRoot(createLayout());
+const { W, H, u, safe } = L;
+const P = L.isPortrait;
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent?.appendChild(e); return e; };
+const wt = (i) => WORDS[i].start;                 // início exato da palavra i (s)
+
+// grade musical: 87,05 BPM, downbeat em "estratégia" (8,08) e na assinatura (27,38)
+const SPB = (wt(71) - wt(23)) / 28;
+const B = beats(60 / SPB, 30, { offset: wt(23) - 12 * SPB });
+
+window.DURATION = 30;
+const SCENES = [
+  { name: 'feed', start: 0, end: 4.63 },
+  { name: 'rosto', start: 4.63, end: 7.03 },
+  { name: 'estratégia', start: 7.03, end: 9.46 },
+  { name: 'masthead', start: 9.46, end: 12.96 },
+  { name: 'nº01 público', start: 12.96, end: 14.38 },
+  { name: 'nº02 identidade', start: 14.38, end: 16.03 },
+  { name: 'nº03 conteúdo', start: 16.03, end: 19.67 },
+  { name: 'renda', start: 19.67, end: 27.38 },
+  { name: 'assinatura', start: 27.38, end: 30 },
+];
+window.SCENES = SCENES;
+window.POSTER_T = 29.4;
+
+// ------------------------------------------------------------------ texturas (uma vez, com semente)
+function paperTexture() {
+  const c = $('paperTex'); const s = 0.5; c.width = Math.round(W * s); c.height = Math.round(H * s);
+  const g = c.getContext('2d'); const img = g.createImageData(c.width, c.height); const r = rng(11);
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+    const blot = noise(x / 90 + noise(y / 140, 3) * 2, 1) * 0.5 + noise(y / 70, 2) * 0.5;   // manchas lentas
+    const v = 255 - 7 - blot * 5 - r() * 9;
+    const i = (y * c.width + x) * 4; img.data[i] = v; img.data[i + 1] = v - 1; img.data[i + 2] = v - 3; img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  g.lineCap = 'round';
+  for (let k = 0; k < 900; k++) {                                                          // fibras
+    const x = r() * c.width, y = r() * c.height, a = r() * Math.PI, l = 3 + r() * 9;
+    g.strokeStyle = `rgba(90,80,66,${0.05 + r() * 0.07})`; g.lineWidth = 0.4 + r() * 0.5;
+    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a + 0.6) * l * 0.5, y + Math.sin(a + 0.6) * l * 0.5, x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  c.style.width = W + 'px'; c.style.height = H + 'px';
+}
+function grainTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), img = g.createImageData(256, 256), r = rng(42);
+  for (let i = 0; i < img.data.length; i += 4) { const v = 128 + (r() - 0.5) * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  $('grain').style.backgroundImage = `url(${c.toDataURL()})`;
+}
+paperTexture(); grainTexture();
+
+// ------------------------------------------------------------------ grid aparente + cabeçalho/rodapé
+const COLS = P ? 6 : 12;
+const headY = P ? safe.y + u * 3.2 : u * 5.2;           // fio do cabeçalho
+const footY = P ? safe.y + safe.h - u * 6.2 : H - u * 5.6;              // fio do rodapé
+const labelSize = P ? u * 2.3 : u * 1.25;
+const cols = [];
+for (let i = 0; i <= COLS; i++) {
+  const x = safe.x + (safe.w * i) / COLS;
+  const c = el('div', 'col', $('grid')); Object.assign(c.style, { left: x + 'px', top: headY + 'px', height: (footY - headY) + 'px' });
+  cols.push(c);
+}
+const ruleTop = el('div', 'rule', $('grid')); Object.assign(ruleTop.style, { left: safe.x + 'px', top: headY + 'px', width: safe.w + 'px' });
+const ruleBot = el('div', 'rule', $('grid')); Object.assign(ruleBot.style, { left: safe.x + 'px', top: footY + 'px', width: safe.w + 'px' });
+// marcas de corte
+const cm = u * 2.2;
+[[0, 0, 'Top', 'Left'], [1, 0, 'Top', 'Right'], [0, 1, 'Bottom', 'Left'], [1, 1, 'Bottom', 'Right']].forEach(([fx, fy, a, b]) => {
+  const c = el('div', 'crop', $('grid'));
+  Object.assign(c.style, { width: cm + 'px', height: cm + 'px', left: (fx ? W - u * 1.6 - cm : u * 1.6) + 'px', top: (fy ? H - u * 1.6 - cm : u * 1.6) + 'px' });
+  c.style['border' + a + 'Width'] = '1px'; c.style['border' + b + 'Width'] = '1px';
+});
+const chrome = $('chrome');
+const hl = el('div', 'label', chrome, 'Influencer com IA'); const hc = el('div', 'label', chrome, 'Edição Nº 01'); const hr = el('div', 'label', chrome, 'Azevedo Academy');
+for (const e of [hl, hc, hr]) { e.style.fontSize = labelSize + 'px'; e.style.top = (headY - labelSize * 1.9) + 'px'; }
+hl.style.left = safe.x + 'px'; hr.style.right = (W - safe.x - safe.w) + 'px';
+hc.style.left = (W / 2) + 'px'; hc.style.transform = 'translateX(-50%)'; hc.style.color = 'var(--graph)';
+if (P) hc.style.display = 'none';
+const folio = el('div', 'folio', chrome); folio.style.fontSize = (P ? u * 4.4 : u * 2.6) + 'px';
+folio.style.left = safe.x + 'px'; folio.style.top = (footY + u * 1.1) + 'px';
+const section = el('div', 'label', chrome); section.style.fontSize = labelSize + 'px'; section.style.color = 'var(--graph)';
+section.style.right = (W - safe.x - safe.w) + 'px'; section.style.top = (footY + u * 1.6) + 'px';
+
+// ------------------------------------------------------------------ utilidades de tipografia
+function splitChars(target, text) {
+  target.innerHTML = [...text].map((c) => `<span class="ch">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+  return [...target.children];
+}
+/** Linha mascarada: letras sobem de dentro do fio da linha (heavy, sem overshoot). */
+function riseChars(chars, t, t0, step = 0.028, dist = 1.08) {
+  chars.forEach((c, i) => {
+    const p = springProgress(t - t0 - i * step, 'heavy');
+    c.style.transform = `translateY(${(1 - p) * dist * 100}%)`;
+  });
+}
+
+/** Distância (px) do topo da caixa de linha (line-height:1) até o topo das versais, medida na fonte real. */
+function capTopFrac(size, family = '"Instrument Serif"') {
+  const g = document.createElement('canvas').getContext('2d');
+  g.font = `400 ${size}px ${family}`;
+  const m = g.measureText('H');
+  const asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+  const baseline = (size - (asc + desc)) / 2 + asc;
+  return baseline - m.actualBoundingBoxAscent;
+}
+
+// ------------------------------------------------------------------ S3 — ESTRATÉGIA
+const s3 = (() => {
+  const root = $('s3');
+  const lines = P ? ['ESTRA-', 'TÉGIA'] : ['ESTRATÉGIA'];
+  const masks = lines.map((txt) => { const m = el('div', 'mask', $('s3words')); const b = el('div', 'serif big', m); b.textContent = txt; return { m, b, txt }; });
+  root.style.display = 'block';
+  const maxW = P ? safe.w * 0.9 : safe.w * 0.93;   // folga p/ zoom de câmera e sobrescrito
+  const size = Math.min(...masks.map(({ b }) => fitText(b, maxW, { max: P ? 420 : 520, min: 60 })));
+  const capH = (() => { const g = document.createElement('canvas').getContext('2d'); g.font = `400 ${size}px "Instrument Serif"`; return g.measureText('H').actualBoundingBoxAscent; })();
+  const lineGap = size * 0.98;                     // espaço para o acento de TÉGIA
+  const blockH = capH + (lines.length - 1) * lineGap;
+  const top0 = P ? safe.y + safe.h * 0.5 - blockH / 2 : H * 0.53 - blockH / 2;   // topo das versais da 1ª linha
+  const chars = [];
+  masks.forEach(({ m, b }, i) => {
+    b.style.fontSize = size + 'px'; b.style.position = 'relative';
+    // máscara: do topo do acento até um pouco abaixo da linha de base
+    const capTop = top0 + i * lineGap;
+    Object.assign(m.style, { left: (safe.x - size * 0.02) + 'px', top: (capTop - size * 0.30) + 'px', height: (size * 1.08) + 'px', width: (safe.w + size * 0.1) + 'px' });
+    b.style.top = (size * 0.30 - capTopFrac(size)) + 'px';  // alinha topo das versais ao capTop
+    chars.push(splitChars(b, b.textContent));
+  });
+  // o acento do É em vinho: cópia do glifo, numa janela que termina exatamente na altura de versal
+  const capTopInBox = capTopFrac(size);
+  for (const cs of chars) for (const c of cs) if (c.textContent === 'É') {
+    c.style.position = 'relative';
+    const win = el('span', null, c); const ext = size * 0.5;
+    Object.assign(win.style, { position: 'absolute', left: 0, top: -ext + 'px', height: (ext + capTopInBox - size * 0.004) + 'px', overflow: 'hidden', width: '100%' });
+    const g = el('span', null, win, 'É');
+    Object.assign(g.style, { position: 'absolute', left: 0, top: ext + 'px', color: 'var(--wine)' });
+  }
+  // larguras para posicionar sobrescrito e fio
+  const lastCh = chars.at(-1).at(-1);
+  const lastRight = lastCh.getBoundingClientRect().right;
+  const baseY = top0 + (lines.length - 1) * lineGap + capH;
+  const sup = $('s3sup'); sup.style.fontSize = size * 0.2 + 'px';
+  sup.style.left = (lastRight + size * 0.03) + 'px'; sup.style.top = (baseY - capH - size * 0.02) + 'px';
+
+  const rule = $('s3rule');
+  const ruleY = baseY + size * 0.16;
+  Object.assign(rule.style, { left: safe.x + 'px', top: ruleY + 'px', width: (P ? safe.w : safe.w) + 'px', height: Math.max(2, u * 0.32) + 'px' });
+
+  const note = $('s3note'); note.style.fontSize = (P ? u * 2.6 : u * 1.45) + 'px';
+  Object.assign(note.style, P ? { left: safe.x + 'px', top: (ruleY + u * 3) + 'px' } : { right: (W - safe.x - safe.w) + 'px', top: (ruleY + u * 2.2) + 'px', textAlign: 'right' });
+
+  // linha de entrada "O que eles têm é" — cada palavra entra quando é falada
+  const lead = $('s3lead'); const leadSize = P ? u * 7.2 : u * 5.4; lead.style.fontSize = leadSize + 'px';
+  const leadWords = [18, 19, 20, 21, 22].map((i) => { const s = el('span', null, lead); s.textContent = WORDS[i].w + ' '; s.style.whiteSpace = 'pre'; return { s, i }; });
+  const leadY = top0 - size * 0.30 - leadSize * 1.25;
+  Object.assign(lead.style, { left: safe.x + 'px', top: leadY + 'px' });
+  const label = $('s3label'); label.style.fontSize = labelSize + 'px';
+  Object.assign(label.style, { left: safe.x + 'px', top: (leadY - labelSize * 2.6) + 'px' });
+  root.style.display = '';
+
+  const T0 = SCENES[2].start, TW = wt(23);
+  return {
+    seek(t) {
+      // rótulo: abre da esquerda (clip) — snappy
+      const pl = springProgress(t - T0 + 0.1, 'snappy');
+      label.style.clipPath = `inset(0 ${(1 - pl) * 100}% 0 0)`;
+      for (const { s, i } of leadWords) {
+        const p = springProgress(t - wt(i), 'heavy');
+        s.style.transform = `translateY(${(1 - p) * leadSize * 0.5}px)`; s.style.opacity = p > 0 ? Math.min(1, p * 2.2) : 0;
+      }
+      // a linha de entrada sobe e acinzenta quando a palavra grande chega
+      const pd = springProgress(t - TW, 'heavy');
+      lead.style.color = pd > 0 ? `rgba(22,20,18,${1 - 0.45 * pd})` : '';
+      chars.forEach((cs, li) => riseChars(cs, t, TW - 0.05 + li * 0.16, 0.03));
+      const pr = springProgress(t - TW - 0.32, 'heavy');
+      rule.style.transform = `scaleX(${pr})`;
+      const ps = springProgress(t - TW - 0.55, 'snappy');
+      sup.style.transform = `translateY(${(1 - ps) * size * 0.06}px)`; sup.style.opacity = ps > 0.02 ? 1 : 0;
+      const pn = springProgress(t - TW - 0.45, 'heavy');
+      note.style.clipPath = `inset(0 0 ${(1 - pn) * 100}% 0)`;
+      note.style.transform = `translateY(${(1 - pn) * u * 1.2}px)`;
+    },
+    show: (on) => { root.style.display = on ? 'block' : 'none'; },
+  };
+})();
+
+// ------------------------------------------------------------------ legendas (palavra falada em tinta, próximas a 35%)
+const caps = $('caps');
+const capSize = P ? u * 3.1 : u * 2.05;
+caps.style.fontSize = capSize + 'px';
+caps.style.top = (P ? footY - capSize * 3.2 : footY - capSize * 2.35) + 'px';
+const MAXC = P ? 30 : 58;
+const chunks = [];
+for (const s of SENTENCES) {
+  let cur = [];
+  const flush = () => { if (cur.length) chunks.push({ a: cur[0], b: cur.at(-1) }); cur = []; };
+  for (let i = s.a; i <= s.b; i++) {
+    const len = cur.reduce((n, k) => n + WORDS[k].w.length + 1, 0) + WORDS[i].w.length;
+    if (len > MAXC) flush();
+    cur.push(i);
+    if (/[:,]$/.test(WORDS[i].w) && len > MAXC * 0.55) flush();
+  }
+  flush();
+}
+chunks.forEach((c) => { c.start = wt(c.a) - 0.08; });
+chunks.forEach((c, k) => {
+  const next = chunks[k + 1];
+  const endSpeech = WORDS[c.b].end;
+  c.end = next && wt(next.a) - endSpeech < 0.9 ? next.start : endSpeech + 0.45;
+});
+let capIdx = -2; let capWords = [];
+function seekCaps(t) {
+  const k = chunks.findIndex((c) => t >= c.start && t < c.end);
+  if (k !== capIdx) {
+    capIdx = k; caps.innerHTML = '';
+    if (k >= 0) {
+      const line = el('span', 'line', caps);
+      capWords = [];
+      for (let i = chunks[k].a; i <= chunks[k].b; i++) { const w = el('span', 'w', line); w.textContent = WORDS[i].w; capWords.push({ w, i }); line.appendChild(document.createTextNode(' ')); }
+      line.lastChild.remove();
+    }
+  }
+  if (k < 0) return;
+  const p = springProgress(t - chunks[k].start, 'snappy');
+  caps.style.transform = `translateY(${(1 - p) * capSize * 0.4}px)`;
+  caps.style.clipPath = `inset(${(1 - p) * 100}% 0 0 0)`;
+  for (const { w, i } of capWords) w.style.color = t >= wt(i) ? 'var(--ink)' : 'rgba(22,20,18,.35)';
+}
+
+// ------------------------------------------------------------------ seek(t)
+function seek(t) {
+  t = clamp(t, 0, window.DURATION);
+  const sc = SCENES.findIndex((s, i) => t >= s.start && (t < s.end || i === SCENES.length - 1));
+  s3.show(sc === 2);
+  if (sc === 2) s3.seek(t);
+  const pageNo = [1, 2, 3, 4, 5, 6, 7, 8, 9][sc];
+  folio.textContent = String(pageNo).padStart(2, '0');
+  section.textContent = ['O feed', 'Sem rosto', 'O que eles têm', 'Do zero', 'Nº 01 — Público', 'Nº 02 — Identidade', 'Nº 03 — Conteúdo', 'Renda', 'Assinatura'][sc];
+  // câmera: zoom lento e pequeno deslocamento por cena (heavy)
+  const sStart = SCENES[sc].start;
+  const z = 1 + 0.018 * springProgress((t - sStart) / 3.2, 'heavy');
+  const dx = noise(t * 0.15, 5) * u * 0.25, dy = noise(t * 0.12, 9) * u * 0.2;
+  $('cam').style.transform = `translate(${dx}px,${dy}px) scale(${z})`;
+  seekCaps(t);
+  const f = Math.floor(t * 24);  // grão muda 24×/s, determinístico
+  $('grain').style.backgroundPosition = `${Math.floor(hash(f) * 256)}px ${Math.floor(hash(f + 999) * 256)}px`;
+}
+window.seek = seek;
+seek(0);
+</script>
+</body>
+</html>

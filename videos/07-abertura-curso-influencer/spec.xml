@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Abertura / anúncio do curso "Influencer com IA". Tempos em segundos na linha do tempo FINAL
+  (narração editada: voz/voz_editada.wav; tempos por palavra em tempos.js).
+  Grade: 87,05 BPM (1 batida = 0,689 s; 1 compasso = 2,757 s), downbeats travados em
+  "estratégia" (8,08) e na assinatura (27,38) — 7 compassos exatos entre os dois.
+-->
+<spec nome="07-abertura-curso-influencer" versao="1">
+
+  <entradas>
+    <pedido>Anúncio/abertura de 30 s do curso Influencer com IA, narrado, editorial premium</pedido>
+    <duracao>30</duracao>
+    <formatos>16:9 (principal), 9:16 (Reels/Shorts, mesma linha do tempo)</formatos>
+    <fps>60</fps>
+    <bpm>87.05</bpm>
+    <referencias>style_guide.md (deste vídeo), assets/curso-influencer/*.webp</referencias>
+    <marca>Influencer com IA · Azevedo Academy (só tipografia; sem logo inventado)</marca>
+    <audio>voz ElevenLabs Liam (B) + trilha sintetizada (audio.mjs) + efeitos graves</audio>
+  </entradas>
+
+  <direcao>
+    <ideia>Uma revista se diagramando sozinha: as fotos dela viram capas e páginas; a palavra-chave de cada frase é composta no grid no instante em que é dita.</ideia>
+    <paleta>#F2EDE4 papel · #161412 tinta · #7B2431 vinho (debrum da camisola, foto 03) · #8B847A cinza-grafite (fios, rótulos)</paleta>
+    <tipografia>Instrument Serif 400 (+ itálico) para palavras-chave; Inter 500/600 caixa alta espaçada para rótulos e legendas</tipografia>
+    <movimento>tipografia/fotos: heavy (sem overshoot) · cursor/UI: snappy · câmera: heavy, zoom lento ≤ 3%</movimento>
+    <fotos>duotone tinta→papel com meio-tom (pontos), borda de papel recortada, grão fino; legenda de revista abaixo</fotos>
+    <reenquadre>
+      <formato id="16:9">página dupla de revista: 12 colunas; palavra-chave ocupando a largura útil</formato>
+      <formato id="9:16">página simples: 6 colunas; palavras longas hifenizadas em 2 linhas (ESTRA- / TÉGIA); legenda acima dos 20% inferiores</formato>
+    </reenquadre>
+  </direcao>
+
+  <estados>
+    <estado t="0.00" cena="feed" evento="sub-boom">frame 0 já em movimento: fio de grid sendo traçado + capa 04 entrando; cabeçalho "Influencer com IA — Edição Nº 01"</estado>
+    <estado t="0.73">"perfis": páginas 01, 02, 05, 03 encaixam no grid (stagger), cada uma com legenda e @perfil</estado>
+    <estado t="1.63">"rápido": contadores de seguidores sobem (ex.: 284 mil)</estado>
+    <estado t="2.92">"marca": etiquetas "Parceria · Moda", "Collab · Fitness" carimbam</estado>
+    <estado t="3.39">"vendem": selos "Vendido hoje · 1.204" aparecem</estado>
+    <estado t="4.63" cena="rosto" evento="whoosh">câmera aproxima a página 01; as outras saem do grid</estado>
+    <estado t="5.93">"rosto": o recorte da foto 01 vira silhueta de papel chapado (tinta) — a foto some por dentro do contorno</estado>
+    <estado t="6.47">pausa dramática (0,56 s): música cai, silhueta segura, só o grão vive</estado>
+    <estado t="7.03" cena="estrategia">silhueta desliza/encolhe para a margem; rótulo "Nº 03 — O que eles têm"</estado>
+    <estado t="8.08" evento="sub-boom">ESTRATÉGIA monta letra a letra (heavy) ocupando a página; fio vinho sublinha</estado>
+    <estado t="9.46" cena="masthead" evento="virada">página vira; "Influencer com IA" monta como título da revista em 9,72–10,56; "do zero" → "Nº 00"</estado>
+    <estado t="12.96" cena="publico" evento="virada">Nº 01 Público: foto 05 em quadro + fichas de público montando</estado>
+    <estado t="14.38" cena="identidade" evento="virada">Nº 02 Identidade: foto 03; cursor colhe 3 cores da foto (cliques graves) e escolhe Instrument Serif × Inter</estado>
+    <estado t="16.03" cena="conteudo" evento="virada">Nº 03 Conteúdo: fotos 02 e 01 entram em quadros ("imagem" 16,79 · "vídeo" 17,42 com timecode)</estado>
+    <estado t="19.67" cena="renda" evento="whoosh">página de renda: grid de 3 colunas; "renda" 22,20 em serifada</estado>
+    <estado t="22.94">col. 1 TikTok Shop: foto 02, cursor clica na garrafa → etiqueta de produto</estado>
+    <estado t="24.18">col. 2 Parceria com marca: foto 04 + contrato que recebe assinatura</estado>
+    <estado t="26.05">col. 3 Seu próprio produto: capa de guia digital com a foto 05</estado>
+    <estado t="26.80" evento="riser">riser grave curto (0,55 s) na pausa, sem cobrir palavra</estado>
+    <estado t="27.38" cena="assinatura" evento="sub-boom">Influencer com IA em serifada grande + Azevedo Academy + seta ↓; "link" 27,57 · "descrição" 28,23</estado>
+    <estado t="30.00">assinatura segura (2,62 s na tela); fim</estado>
+  </estados>
+
+  <regras>
+    <regra>seek(t) puro; texturas e meio-tom gerados uma vez em READY com rng(seed).</regra>
+    <regra>Palavra-chave entra no início exato da palavra (tempos.js), nunca antes de ser dita.</regra>
+    <regra>Legendas: Inter pequena na base, palavras já faladas em tinta, próximas em 35%.</regra>
+    <regra>Nenhuma pessoa/rosto gerado: só as 5 fotos; silhueta = máscara da própria foto 01.</regra>
+    <regra>Sem neon, glow, gradiente, glitch.</regra>
+  </regras>
+
+  <cuidados>
+    <cuidado>ESTRATÉGIA no 9:16 não pode encostar na área segura; usar hifenização em 2 linhas.</cuidado>
+    <cuidado>Cursor nunca cobre palavra-chave nem legenda.</cuidado>
+    <cuidado>Etiquetas de marca sempre genéricas; logos reais das fotos ficam suavizados pelo meio-tom.</cuidado>
+  </cuidados>
+
+</spec>
