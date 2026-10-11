@@ -1,0 +1,396 @@
+{
+ "voice": "Liam",
+ "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+ "model": "eleven_multilingual_v2",
+ "seed": 707,
+ "settings": {
+  "stability": 0.62,
+  "similarity_boost": 0.8,
+  "style": 0.05,
+  "use_speaker_boost": true,
+  "speed": 1
+ },
+ "duration": 29.628,
+ "words": [
+  {
+   "w": "Sabe",
+   "start": 0.046,
+   "end": 0.279
+  },
+  {
+   "w": "aqueles",
+   "start": 0.302,
+   "end": 0.557
+  },
+  {
+   "w": "perfis",
+   "start": 0.615,
+   "end": 0.975
+  },
+  {
+   "w": "que",
+   "start": 1.022,
+   "end": 1.091
+  },
+  {
+   "w": "crescem",
+   "start": 1.126,
+   "end": 1.451
+  },
+  {
+   "w": "rápido,",
+   "start": 1.509,
+   "end": 2.067
+  },
+  {
+   "w": "fecham",
+   "start": 2.218,
+   "end": 2.577
+  },
+  {
+   "w": "com",
+   "start": 2.624,
+   "end": 2.752
+  },
+  {
+   "w": "marca",
+   "start": 2.821,
+   "end": 3.17
+  },
+  {
+   "w": "e",
+   "start": 3.216,
+   "end": 3.251
+  },
+  {
+   "w": "vendem",
+   "start": 3.309,
+   "end": 3.599
+  },
+  {
+   "w": "todo",
+   "start": 3.646,
+   "end": 3.843
+  },
+  {
+   "w": "dia?",
+   "start": 3.901,
+   "end": 4.331
+  },
+  {
+   "w": "Muitos",
+   "start": 4.841,
+   "end": 5.248
+  },
+  {
+   "w": "nem",
+   "start": 5.306,
+   "end": 5.457
+  },
+  {
+   "w": "mostram",
+   "start": 5.515,
+   "end": 5.909
+  },
+  {
+   "w": "o",
+   "start": 5.956,
+   "end": 5.979
+  },
+  {
+   "w": "rosto.",
+   "start": 6.026,
+   "end": 6.583
+  },
+  {
+   "w": "O",
+   "start": 6.908,
+   "end": 6.989
+  },
+  {
+   "w": "que",
+   "start": 7.07,
+   "end": 7.152
+  },
+  {
+   "w": "eles",
+   "start": 7.175,
+   "end": 7.349
+  },
+  {
+   "w": "têm",
+   "start": 7.419,
+   "end": 7.663
+  },
+  {
+   "w": "é",
+   "start": 7.779,
+   "end": 7.872
+  },
+  {
+   "w": "estratégia.",
+   "start": 7.941,
+   "end": 8.905
+  },
+  {
+   "w": "No",
+   "start": 9.601,
+   "end": 9.741
+  },
+  {
+   "w": "Influencer",
+   "start": 9.776,
+   "end": 10.321
+  },
+  {
+   "w": "com",
+   "start": 10.379,
+   "end": 10.53
+  },
+  {
+   "w": "IA,",
+   "start": 10.612,
+   "end": 11.018
+  },
+  {
+   "w": "eu",
+   "start": 11.192,
+   "end": 11.343
+  },
+  {
+   "w": "te",
+   "start": 11.389,
+   "end": 11.482
+  },
+  {
+   "w": "mostro",
+   "start": 11.552,
+   "end": 11.935
+  },
+  {
+   "w": "do",
+   "start": 11.981,
+   "end": 12.086
+  },
+  {
+   "w": "zero:",
+   "start": 12.202,
+   "end": 12.759
+  },
+  {
+   "w": "quem",
+   "start": 13.27,
+   "end": 13.444
+  },
+  {
+   "w": "é",
+   "start": 13.502,
+   "end": 13.537
+  },
+  {
+   "w": "o",
+   "start": 13.584,
+   "end": 13.618
+  },
+  {
+   "w": "seu",
+   "start": 13.677,
+   "end": 13.839
+  },
+  {
+   "w": "público,",
+   "start": 13.897,
+   "end": 14.536
+  },
+  {
+   "w": "qual",
+   "start": 14.687,
+   "end": 14.896
+  },
+  {
+   "w": "é",
+   "start": 14.942,
+   "end": 15
+  },
+  {
+   "w": "a",
+   "start": 15.047,
+   "end": 15.07
+  },
+  {
+   "w": "cara",
+   "start": 15.128,
+   "end": 15.337
+  },
+  {
+   "w": "do",
+   "start": 15.383,
+   "end": 15.453
+  },
+  {
+   "w": "seu",
+   "start": 15.523,
+   "end": 15.662
+  },
+  {
+   "w": "perfil",
+   "start": 15.708,
+   "end": 16.115
+  },
+  {
+   "w": "e",
+   "start": 16.358,
+   "end": 16.486
+  },
+  {
+   "w": "como",
+   "start": 16.567,
+   "end": 16.811
+  },
+  {
+   "w": "criar",
+   "start": 16.846,
+   "end": 17.101
+  },
+  {
+   "w": "imagem",
+   "start": 17.148,
+   "end": 17.566
+  },
+  {
+   "w": "e",
+   "start": 17.612,
+   "end": 17.693
+  },
+  {
+   "w": "vídeo",
+   "start": 17.775,
+   "end": 18.019
+  },
+  {
+   "w": "com",
+   "start": 18.065,
+   "end": 18.193
+  },
+  {
+   "w": "inteligência",
+   "start": 18.251,
+   "end": 18.912
+  },
+  {
+   "w": "artificial.",
+   "start": 18.971,
+   "end": 19.806
+  },
+  {
+   "w": "E,",
+   "start": 20.248,
+   "end": 20.399
+  },
+  {
+   "w": "principalmente,",
+   "start": 20.433,
+   "end": 21.374
+  },
+  {
+   "w": "como",
+   "start": 21.49,
+   "end": 21.687
+  },
+  {
+   "w": "transformar",
+   "start": 21.734,
+   "end": 22.326
+  },
+  {
+   "w": "isso",
+   "start": 22.419,
+   "end": 22.639
+  },
+  {
+   "w": "em",
+   "start": 22.674,
+   "end": 22.732
+  },
+  {
+   "w": "renda:",
+   "start": 22.802,
+   "end": 23.266
+  },
+  {
+   "w": "TikTok",
+   "start": 23.591,
+   "end": 24.102
+  },
+  {
+   "w": "Shop,",
+   "start": 24.172,
+   "end": 24.648
+  },
+  {
+   "w": "parceria",
+   "start": 24.857,
+   "end": 25.356
+  },
+  {
+   "w": "com",
+   "start": 25.414,
+   "end": 25.553
+  },
+  {
+   "w": "marca",
+   "start": 25.635,
+   "end": 26.041
+  },
+  {
+   "w": "e",
+   "start": 26.192,
+   "end": 26.32
+  },
+  {
+   "w": "o",
+   "start": 26.378,
+   "end": 26.413
+  },
+  {
+   "w": "seu",
+   "start": 26.471,
+   "end": 26.633
+  },
+  {
+   "w": "próprio",
+   "start": 26.703,
+   "end": 27.039
+  },
+  {
+   "w": "produto.",
+   "start": 27.063,
+   "end": 27.643
+  },
+  {
+   "w": "O",
+   "start": 28.026,
+   "end": 28.108
+  },
+  {
+   "w": "link",
+   "start": 28.224,
+   "end": 28.444
+  },
+  {
+   "w": "tá",
+   "start": 28.56,
+   "end": 28.7
+  },
+  {
+   "w": "na",
+   "start": 28.769,
+   "end": 28.839
+  },
+  {
+   "w": "descrição.",
+   "start": 28.897,
+   "end": 29.628
+  }
+ ]
+}
