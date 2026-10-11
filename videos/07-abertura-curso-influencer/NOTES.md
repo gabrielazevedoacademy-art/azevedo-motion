@@ -11,3 +11,4 @@
 - Rodada 1: zoom de câmera empurrava a palavra para fora da margem; legenda não aparecia (fim de bloco indefinido); sobrescrito longe da palavra.
 - Rodada 2: acento do É em vinho desalinhado (proporção fixa) → medido com TextMetrics; 9:16 com cabeçalho/rodapé fora da área segura → movidos para dentro.
 - Rodada 3: OK → `styleframe_16x9.png`, `styleframe_9x16.png`.
+- Rodada 4 (pedido do cliente): removida toda a escrita miúda — cabeçalho, fólio, seção, "Editorial — Estratégia", nota de rodapé e sobrescrito. Ficam só a frase de entrada, ESTRATÉGIA, o fio vinho e a legenda (aumentada para 2,5u / 3,5u). Regra vale para o vídeo inteiro.

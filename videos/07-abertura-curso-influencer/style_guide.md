@@ -16,13 +16,14 @@ Duotone das fotos: tinta `#161412` → papel `#F2EDE4`, com meio-tom de pontos e
 
 ## Tipografia
 - **Instrument Serif 400** (e itálico) — palavras-chave, títulos, números grandes. Caixa alta para palavra-impacto (ESTRATÉGIA), caixa baixa + itálico para títulos de revista.
-- **Inter 500/600** — rótulos em caixa alta, `letter-spacing: .16em`, 1,3–1,6u (16:9) / 2,4–2,8u (9:16). Legendas em Inter 500, sentence case.
+- **Inter 500/600** — legendas (2,5u no 16:9 / 3,5u no 9:16) e títulos curtos de cena; nunca abaixo disso.
 - Nunca gradiente, nunca contorno brilhante.
 
 ## Grid e diagramação
 - 16:9: 12 colunas dentro da área segura, fios de 1 px a 10% de tinta; cabeçalho (fio + rótulos) e rodapé (fólio + seção).
 - 9:16: 6 colunas, cabeçalho abaixo de 11% (interface), legenda acima dos 20% inferiores.
-- Rótulos: `Nº 03 — Estratégia`, fólios `03`, marcas de corte nos cantos.
+- Só fios, colunas e marcas de corte. **Sem micro-texto**: nada de cabeçalho, fólio, rótulos pequenos, notas de rodapé ou sobrescritos (pedido do cliente — escrita miúda tende a inventar e repetir informação).
+- Texto na tela só vem da narração (palavras-chave, frase de entrada, legenda) ou é título de cena do roteiro (Nº 01 Público…), sempre em tamanho de leitura.
 
 ## Textura
 - Papel: ruído fino + manchas de baixa frequência + fibras curtas (gerado com semente).
