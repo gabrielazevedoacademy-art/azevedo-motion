@@ -20,8 +20,8 @@
 
   <direcao>
     <ideia>Uma revista se diagramando sozinha: as fotos dela viram capas e páginas; a palavra-chave de cada frase é composta no grid no instante em que é dita.</ideia>
-    <paleta>#F2EDE4 papel · #161412 tinta · #7B2431 vinho (debrum da camisola, foto 03) · #8B847A cinza-grafite (fios, rótulos)</paleta>
-    <tipografia>Instrument Serif 400 (+ itálico) para palavras-chave; Inter 500/600 caixa alta espaçada para rótulos e legendas</tipografia>
+    <paleta>#F2EDE4 papel · #161412 tinta · #7B2431 vinho (debrum da camisola, foto 03) · #8B847A cinza-grafite (fios)</paleta>
+    <tipografia>Instrument Serif 400 (+ itálico) para palavras-chave; Inter 500/600 para legendas e títulos curtos de cena, sempre em tamanho de leitura</tipografia>
     <movimento>tipografia/fotos: heavy (sem overshoot) · cursor/UI: snappy · câmera: heavy, zoom lento ≤ 3%</movimento>
     <fotos>duotone tinta→papel com meio-tom (pontos), borda de papel recortada, grão fino; legenda de revista abaixo</fotos>
     <reenquadre>

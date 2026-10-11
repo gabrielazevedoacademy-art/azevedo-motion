@@ -8,8 +8,8 @@ Copiamos das fotos a **cor** e o **clima**; o assunto (cenários, roupas) não v
 |---|---|---|
 | papel | `#F2EDE4` | fundo (off-white quente, textura de papel com fibras) |
 | tinta | `#161412` | tipografia, silhueta, sombra do duotone |
-| vinho | `#7B2431` | ÚNICA cor de destaque: fios, rótulos "Nº", cursor de seleção. Amostrada do debrum da camisola (foto 03) |
-| grafite | `#8B847A` | grid aparente, rótulos secundários, legendas futuras |
+| vinho | `#7B2431` | ÚNICA cor de destaque: fios, acento do É, cursor de seleção. Amostrada do debrum da camisola (foto 03) |
+| grafite | `#8B847A` | grid aparente e fios |
 | papel-sombra | `#E4DDD1` | verso de página, fundos de quadro |
 
 Duotone das fotos: tinta `#161412` → papel `#F2EDE4`, com meio-tom de pontos em 45° e um toque de vinho nos meios-tons só quando a cena pedir.
@@ -20,8 +20,8 @@ Duotone das fotos: tinta `#161412` → papel `#F2EDE4`, com meio-tom de pontos e
 - Nunca gradiente, nunca contorno brilhante.
 
 ## Grid e diagramação
-- 16:9: 12 colunas dentro da área segura, fios de 1 px a 10% de tinta; cabeçalho (fio + rótulos) e rodapé (fólio + seção).
-- 9:16: 6 colunas, cabeçalho abaixo de 11% (interface), legenda acima dos 20% inferiores.
+- 16:9: 12 colunas dentro da área segura, fios de 1 px a 10% de tinta; fio de topo e de base.
+- 9:16: 6 colunas, fios dentro da área segura (11% topo / 20% base), legenda acima dos 20% inferiores.
 - Só fios, colunas e marcas de corte. **Sem micro-texto**: nada de cabeçalho, fólio, rótulos pequenos, notas de rodapé ou sobrescritos (pedido do cliente — escrita miúda tende a inventar e repetir informação).
 - Texto na tela só vem da narração (palavras-chave, frase de entrada, legenda) ou é título de cena do roteiro (Nº 01 Público…), sempre em tamanho de leitura.
 
