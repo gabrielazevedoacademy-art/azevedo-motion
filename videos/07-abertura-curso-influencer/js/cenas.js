@@ -63,7 +63,7 @@ export async function buildScenes(IMG, MASK) {
     }
     const rot = { p02: -1.6, p04: 1.1, p01: -0.6, p05: 1.5, p03: -1.1 };
     // P01 é feito no tamanho do herói (cena 2) e reduzido no feed — nunca ampliado
-    const heroPh = P ? box.h * 0.66 : box.h * 0.97;
+    const heroPh = (P ? box.h * 0.74 : box.h * 0.98) / 1.09;
     const prints = {};
     for (const s of slots) {
       const hh = s.k === 'p01' ? heroPh : feedPh;
@@ -75,8 +75,9 @@ export async function buildScenes(IMG, MASK) {
     // herói da cena 2
     const hero = prints.p01;
     const heroW = hero.w, heroH = hero.h;
-    const heroX = P ? box.cx - heroW / 2 : box.x + box.w * 0.30 - heroW / 2;
-    const heroY = P ? box.y : box.y + (box.h - heroH) / 2;
+    const heroX = P ? box.x + box.w * 0.30 - heroW / 2 : box.x + box.w * 0.30 - heroW / 2;
+    const heroShift = (box.cx - heroW / 2) - heroX;   // começa centralizado
+    const heroY = box.y + (box.h - heroH) / 2;
     // silhueta (papel chapado em tinta) exatamente sobre a figura
     const sil = makeCutout(IMG.p01, MASK.p01, { h: hero.inner.h, mode: 'silhouette' });
     lay.insertBefore(sil.el, hero.el);
@@ -92,9 +93,9 @@ export async function buildScenes(IMG, MASK) {
     });
     if (P) { const total = wx - wordSize * 0.42 - box.x; fw.forEach((o) => { o.m.mask.style.left = px(parseFloat(o.m.mask.style.left) + (box.w - total) / 2); }); }
     // "rosto." riscado
-    const rSize = P ? u * 12 : u * 15;
-    const rx = P ? box.x + u * 2 : heroX + heroW + u * 7;
-    const rCap = P ? heroY + heroH + u * 7 : box.cy - capHeight(rSize) * 0.4;
+    const rSize = P ? u * 11 : u * 15;
+    const rx = P ? heroX + heroW * 0.97 : heroX + heroW + u * 7;
+    const rCap = P ? heroY + heroH * 0.52 : box.cy - capHeight(rSize) * 0.4;
     const rosto = maskedLine(lay, 'rosto.', { size: rSize, x: rx, capY: rCap, italic: true });
     const strike = el('div', 'strike', lay);
     const rw = rosto.width();
@@ -150,7 +151,7 @@ export async function buildScenes(IMG, MASK) {
           let x = s.x, y = s.y + (1 - pin) * H * 0.62, r = rot[s.k] + (1 - pin) * (s.k === 'p04' ? -7 : 6), sc = pr.scale;
           if (s.k === 'p01') {
             const ph = sp(t - tPush);       // aproxima: vira herói
-            x = lerp(x, heroX, ph); y = lerp(y, heroY, ph); r = lerp(r, 0, ph); sc = lerp(pr.scale, 1, ph);
+            x = lerp(x, heroX + heroShift * (1 - sp(t - wt(17) + 0.1)), ph); y = lerp(y, heroY, ph); r = lerp(r, 0, ph); sc = lerp(pr.scale, 1, ph);
           } else {
             const pe = sp(t - tPush - 0.02 - Math.abs(slots.indexOf(s) - 2) * 0.04);
             const dir = s.x + s.w / 2 < box.cx ? -1 : 1;
@@ -162,10 +163,10 @@ export async function buildScenes(IMG, MASK) {
         }
         // silhueta: a foto se recolhe de cima para baixo e revela o papel chapado
         const pw = sp(t - wt(17) + 0.02);
-        hero.el.style.clipPath = pw > 0 ? `inset(${pw * 106}% -10% -10% -10%)` : '';
+        hero.el.style.clipPath = pw > 0 ? `inset(${pw * 118}% -10% -10% -10%)` : '';
         const out = sp(t - 6.98);           // tudo da cena 2 desce para fora
         show(sil.el, t >= wt(17) - 0.05 && out < 0.999);
-        tf(sil.el, 0, out * H * 1.05, out * 3);
+        tf(sil.el, heroShift * (1 - sp(t - wt(17) + 0.1)), out * H * 1.05, out * 3);
         if (pw >= 0.985) show(hero.el, false);
         // palavras do feed
         fw.forEach((o, j) => {
@@ -356,7 +357,7 @@ export async function buildScenes(IMG, MASK) {
     const T0 = 15.91;
     const title = chapterTitle(lay, '03', 'Conteúdo', { x: box.x, y: box.y + u * (P ? 1 : 4), t0: T0 + 0.12 });
     const fr = 0.8;
-    const fw = P ? box.w * 0.46 : box.w * 0.2, fh = fw / fr, fgap = P ? box.w * 0.08 : u * 3;
+    const fw = P ? box.w * 0.4 : box.w * 0.2, fh = fw / fr, fgap = P ? box.w * 0.1 : u * 3;
     const fy = P ? title.bottom + u * 3.5 : box.y + u * 3;
     const fx0 = P ? box.x : box.x + box.w * 0.29;
     const frames = [0, 1].map((i) => { const f = el('div', 'frame', lay); Object.assign(f.style, { left: px(fx0 + i * (fw + fgap)), top: px(fy), width: px(fw), height: px(fh) }); return f; });
@@ -386,7 +387,7 @@ export async function buildScenes(IMG, MASK) {
     // miniaturas (recortes das próprias fotos) = criação com IA
     const crops = [['p04', [0.5, 0.3]], ['p05', [0.42, 0.3]], ['p03', [0.5, 0.55]], ['p02', [0.5, 0.6]], ['p01', [0.5, 0.3]], ['p04', [0.55, 0.62]]];
     let tx0, ty0, tsz, tcols, tg;
-    if (P) { tcols = 6; tg = u * 1.6; tsz = (box.w - tg * 5) / 6 / 1.09; tx0 = box.x; ty0 = labY + capHeight(lSize) + u * 4; }
+    if (P) { tcols = 6; tg = u * 1.6; tsz = (box.w - tg * 5) / 6 / 1.13; tx0 = box.x; ty0 = labY + capHeight(lSize) + u * 4; }
     else { tcols = 2; tg = u * 2; tx0 = fx0 + 2 * (fw + fgap) + u * 1.5; tsz = ((box.r - tx0) - tg) / 2 / 1.09; ty0 = fy; }
     const thumbs = crops.map(([k, f], i) => {
       const pp = makePrint(IMG[k], { h: tsz, ratio: 1, focus: f, seed: 70 + i, border: 0.06 });
@@ -448,28 +449,30 @@ export async function buildScenes(IMG, MASK) {
     const cells = [];
     for (let i = 0; i < n; i++) {
       if (!P) { const cw = (box.w - gap * 2) / 3; cells.push({ x: box.x + i * (cw + gap), y: colTop, w: cw, h: box.b - colTop }); }
-      else { const rh = (box.b - colTop - gap * 2) / 3; cells.push({ x: box.x, y: colTop + i * (rh + gap), w: box.w, h: rh }); }
+      else { const av = box.b - colTop - gap, r1 = av * 0.54, cw = (box.w - gap) / 2;
+        cells.push(i < 2 ? { x: box.x + i * (cw + gap), y: colTop, w: cw, h: r1 } : { x: box.x, y: colTop + r1 + gap, w: box.w, h: av - r1 }); }
     }
     const tSize = P ? u * 5 : u * 4.4;
     const titles = [[[61, 62], 'TikTok Shop'], [[63, 64, 65], 'Parceria com marca'], [[68, 69, 70], 'Seu próprio produto']];
     const colTitles = titles.map(([idx, txt], i) => {
       const c = cells[i];
-      const m = maskedLine(lay, txt, { size: tSize, x: c.x, capY: c.y + (P ? u * 1 : 0), by: 'words' });
+      const m = maskedLine(lay, txt, { size: tSize, x: c.x, capY: c.y, by: 'words' });
       return { m, idx };
     });
-    const rules = cells.slice(1).map((c) => {
-      const r = el('div', P ? 'hline' : 'vline', lay);
-      if (!P) Object.assign(r.style, { left: px(c.x - gap / 2), top: px(c.y), height: px(c.h) }); else Object.assign(r.style, { left: px(c.x), top: px(c.y - gap / 2), width: px(c.w) });
+    const rules = cells.slice(1).map((c, i) => {
+      const horiz = P && i === 1;
+      const r = el('div', horiz ? 'hline' : 'vline', lay); r.dataset.h = horiz ? '1' : '';
+      if (!horiz) Object.assign(r.style, { left: px(c.x - gap / 2), top: px(c.y), height: px(c.h) }); else Object.assign(r.style, { left: px(c.x), top: px(c.y - gap / 2), width: px(c.w) });
       return r;
     });
-    const vis = cells.map((c) => (P ? { x: c.x + c.w * 0.36, y: c.y, w: c.w * 0.64, h: c.h } : { x: c.x, y: c.y + tSize * 1.25, w: c.w, h: c.h - tSize * 1.25 }));
+    const vis = cells.map((c) => ({ x: c.x, y: c.y + tSize * 1.25, w: c.w, h: c.h - tSize * 1.25 }));
     // col 1 — TikTok Shop: foto 02, clique na garrafa
     const v1 = vis[0];
     const R1 = 0.68, F1 = [0.5, 0.44];
-    const p1h = (P ? v1.h * 0.98 : Math.min(v1.h * 0.96, v1.w / R1 * 0.92)) / 1.09;
+    const p1h = Math.min(v1.h * 0.96, v1.w / R1 * 0.92) / 1.09;
     const pr1 = makePrint(IMG.p02, { h: p1h, ratio: R1, focus: F1, seed: 81 });
     lay.appendChild(pr1.el);
-    const pr1x = P ? v1.x + v1.w - pr1.w : v1.x + (v1.w - pr1.w) / 2, pr1y = v1.y + (P ? 0 : (v1.h - pr1.h) / 2);
+    const pr1x = v1.x + (v1.w - pr1.w) / 2, pr1y = v1.y + (v1.h - pr1.h) / 2;
     place(pr1.el, pr1x, pr1y);
     // garrafa na foto 02: (247, 1030) em 941×1672 → no recorte 4:5 com foco (0.4, 0.6)
     const b2 = IMG.p02; const sh2 = b2.naturalWidth / R1; const sy2 = clamp(F1[1] * b2.naturalHeight - sh2 / 2, 0, b2.naturalHeight - sh2);
@@ -481,11 +484,11 @@ export async function buildScenes(IMG, MASK) {
     const keys = [[22.9, W + u * 5, bot[1] + u * 10], [23.15, bot[0] + u * 0.5, bot[1] + u * 0.5], [tClick + 0.35, bot[0] + u * 8, bot[1] + u * 7]];
     // col 2 — Parceria: foto 04 + contrato com assinatura
     const v2 = vis[1];
-    const p2h = (P ? v2.h * 0.98 : v2.h * 0.62) / 1.09;
+    const p2h = Math.min(v2.h * 0.62, v2.w * 0.72 / 0.8) / 1.09;
     const pr2 = makePrint(IMG.p04, { h: p2h, ratio: 0.8, focus: [0.55, 0.36], seed: 82 });
-    lay.appendChild(pr2.el); const pr2x = v2.x + (P ? 0 : u * 0.5), pr2y = v2.y + (P ? 0 : u * 0.5); place(pr2.el, pr2x, pr2y);
-    const shH = P ? v2.h * 0.98 : v2.h * 0.66, shW = shH * 0.74;
-    const shX = P ? pr2x + pr2.w + u * 2 : v2.x + v2.w - shW - u * 0.5, shY = P ? v2.y : v2.y + v2.h - shH - u * 0.5;
+    lay.appendChild(pr2.el); const pr2x = v2.x + u * 0.5, pr2y = v2.y + u * 0.5; place(pr2.el, pr2x, pr2y);
+    const shH = Math.min(v2.h * 0.66, v2.w * 0.62 / 0.74), shW = shH * 0.74;
+    const shX = v2.x + v2.w - shW - u * 0.5, shY = v2.y + v2.h - shH - u * 0.5;
     const sheet = el('div', 'sheet', lay); Object.assign(sheet.style, { left: px(shX), top: px(shY), width: px(shW), height: px(shH) });
     const rr = rng(23);
     for (let k = 0; k < 7; k++) { const b = el('div', 'tline', sheet); Object.assign(b.style, { left: px(shW * 0.12), top: px(shH * (0.12 + k * 0.075)), width: px(shW * (0.55 + (rr() + 1) * 0.15) * (k === 6 ? 0.6 : 1)), height: px(Math.max(2, shH * 0.018)) }); }
@@ -495,8 +498,8 @@ export async function buildScenes(IMG, MASK) {
     sigPath.style.strokeDasharray = `${sigLen}`;
     // col 3 — Seu próprio produto: capa de produto digital com a foto 05
     const v3 = vis[2];
-    const cvH = P ? v3.h * 0.98 : Math.min(v3.h * 0.94, v3.w * 0.8 / 0.72), cvW = cvH * 0.72;
-    const cvX = P ? v3.x + v3.w - cvW : v3.x + (v3.w - cvW) / 2, cvY = v3.y + (v3.h - cvH) / 2;
+    const cvH = Math.min(v3.h * 0.94, v3.w * 0.8 / 0.72), cvW = cvH * 0.72;
+    const cvX = v3.x + (v3.w - cvW) / 2, cvY = v3.y + (v3.h - cvH) / 2;
     const cover = el('div', 'cover', lay); Object.assign(cover.style, { left: px(cvX), top: px(cvY), width: px(cvW), height: px(cvH) });
     const spine = el('div', 'spine', cover); spine.style.width = px(cvW * 0.07);
     const cimgH = cvH * 0.6;
@@ -515,8 +518,9 @@ export async function buildScenes(IMG, MASK) {
         // frase + RENDA, depois reorganiza como cabeçalho
         const up = sp(t - 22.82);
         leads.forEach(({ m, idx }) => {
-          m.parts.forEach((p, k) => { const q = sp(t - wt(idx[k])); p.style.transform = `translateY(${(1 - q) * 125 - up * 170}%)`; });
-          show(m.mask, up < 0.97);
+          const lo = sp(t - 22.5);
+          m.parts.forEach((p, k) => { const q = sp(t - wt(idx[k])); p.style.transform = `translateY(${(1 - q) * 125 - lo * 140}%)`; });
+          show(m.mask, lo < 0.97);
         });
         riseChars(renda.parts, t, wt(60) - 0.04, 0.035);
         const s = lerp(1, hScale, up);
@@ -525,7 +529,7 @@ export async function buildScenes(IMG, MASK) {
         rRule.style.transformOrigin = 'left';
         rRule.style.transform = `translateY(${(hCap + capHeight(hSize) + u * 1.6 - parseFloat(rRule.style.top)) * up}px) scaleX(${sp(t - wt(60) - 0.3)})`;
         // colunas
-        rules.forEach((r, i) => { const q = sp(t - wt(61) + 0.1 - i * 0.08); r.style.transform = P ? `scaleX(${q})` : `scaleY(${q})`; });
+        rules.forEach((r, i) => { const q = sp(t - wt(61) + 0.1 - i * 0.08); r.style.transform = r.dataset.h ? `scaleX(${q})` : `scaleY(${q})`; });
         colTitles.forEach(({ m, idx }) => m.parts.forEach((p, k) => { const q = sp(t - wt(idx[k])); p.style.transform = `translateY(${(1 - q) * 125}%)`; }));
         const q1 = sp(t - wt(61) + 0.05);
         tf(pr1.el, 0, (1 - q1) * H * 0.4, (1 - q1) * 4); show(pr1.el, q1 > 0.001);
